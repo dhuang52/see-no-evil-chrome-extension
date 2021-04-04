@@ -1,0 +1,10 @@
+{
+  "name": "See No Evil",
+  "description" : "Hide spoilers",
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "version": "1.0",
+  "manifest_version": 3
+}

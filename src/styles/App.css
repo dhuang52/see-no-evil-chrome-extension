@@ -1,0 +1,86 @@
+#see-no-evil-popup {
+  width: 325px;
+  height: 500px;
+  padding: 10px 20px;
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+#popup-app {
+  /* ignores scroll bar width */
+  width:100vw;
+}
+
+#popup-loading {
+  padding: 0px;
+  height: 100%;
+}
+
+input {
+  width: 100%;
+  padding: 3px 5px 0px;
+  outline: none;
+  border-width: 0 0 1px;
+  border-color: #d9d9d9;
+  transition: border-color 0.2s linear;
+}
+
+input:focus {
+  border-color: #1890ff;
+}
+
+.hideList {
+  padding-left: 10px;
+}
+
+.hideListItem {
+  margin-top: 10px;
+  margin-bottom: 5px;
+  height: 1.7em;
+}
+
+.fadeOut {
+  animation: fadeOut .2s linear;
+}
+
+.fadeIn {
+  animation: fadeIn .3s linear;
+}
+
+.deleteIcon {
+  font-size: .8em;
+  padding: 0;
+  transition: color 0.2s linear;
+}
+
+.deleteIcon:hover {
+  color: #f5222d;
+  cursor: pointer;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    margin-top: 0px;
+    margin-bottom: 0px;
+    opacity: 0;
+    height: 0em;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    height: 0em;
+  }
+  100% {
+    opacity: 1;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    height: 1.7em;
+  }
+}
