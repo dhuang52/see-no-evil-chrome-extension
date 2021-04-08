@@ -2,40 +2,51 @@ import React from 'react'
 import Header from './Header'
 import Search from './Search'
 import HideList from './HideList'
+import Loading from './Loading'
 import { sortBy } from '../constants/sortBy'
 import { Row, Col, Space } from 'antd'
 import '../styles/App.css'
 import 'antd/dist/antd.css'
 
 const hideWordsStorageKey = 'hideWords'
+const defaultDate = new Date()
+const defaultHideWord = {
+  word: 'add some words in the search bar',
+  lastModified: defaultDate,
+  id: defaultDate.toISOString()
+}
 
 class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      // bad practice
-      hideWords: this.props.hideWords ? [...this.props.hideWords] : [],
+      isLoading: true,
+      hideWords: [],
       sortBy: sortBy.NEW,
       displayHideWords: [],
       isSearching: false,
     }
-    console.log(this.props)
-    // this.getHideWordsFromSyncStorage()
   }
 
-  // DO NOT USE
-  // getHideWordsFromSyncStorage = () => {
-  //   chrome.storage.sync.get(hideWordsStorageKey, (result) => {
-  //     let hideWords = [defaultHideWord]
-  //     if (chrome.runtime.lastError) {
-  //       console.log('error while getting hide words')
-  //     } else if (result[hideWordsStorageKey]) {
-  //       hideWords = result[hideWordsStorageKey]
-  //     }
-  //     // React does not properly rerender when calling setState in callback
-  //     this.setState({ hideWords })
-  //   })
-  // }
+  componentDidMount() {
+    this.getHideWordsFromSyncStorage()
+  }
+
+  getHideWordsFromSyncStorage = () => {
+    chrome.storage.sync.get(hideWordsStorageKey, (result) => {
+      let hideWords = [defaultHideWord]
+      if (chrome.runtime.lastError) {
+        console.log('error while getting hide words')
+      } else if (result[hideWordsStorageKey]) {
+        hideWords = result[hideWordsStorageKey]
+      }
+      // React does not properly rerender when calling setState in callback
+      this.setState({
+        hideWords,
+        isLoading: false,
+      })
+    })
+  }
 
   syncStorageAndState = (newHideWordsList) => {
     const storageKvp = {}
@@ -85,6 +96,9 @@ class App extends React.Component {
   }
 
   editHideWord = (originalWord, newWord) => {
+    if (!newWord) {
+      return
+    }
     let { hideWords } = this.state
     hideWords = hideWords.map(hideWord => {
       if (hideWord.word === originalWord) {
@@ -129,8 +143,7 @@ class App extends React.Component {
     })
   }
 
-  render() {
-    console.log(this.state)
+  renderApp = () => {
     return (
       <Row id='popup-app'>
         <Col span={24}>
@@ -150,6 +163,14 @@ class App extends React.Component {
         </Col>
       </Row>
     )
+  }
+
+  renderLoading = () => {
+    return (<Loading />)
+  }
+
+  render() {
+    return this.state.isLoading ? this.renderLoading() : this.renderApp()
   }
 }
 
