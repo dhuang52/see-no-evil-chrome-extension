@@ -8,10 +8,6 @@ import '../styles/App.css'
 import 'antd/dist/antd.css'
 
 const hideWordsStorageKey = 'hideWords'
-const defaultHideWord = {
-  word: 'add some words in the search bar',
-  date: new Date(),
-}
 
 class App extends React.Component {
   constructor(props) {
@@ -20,27 +16,26 @@ class App extends React.Component {
       // bad practice
       hideWords: this.props.hideWords ? [...this.props.hideWords] : [],
       sortBy: sortBy.NEW,
-      displayHideWords: []
+      displayHideWords: [],
+      isSearching: false,
     }
     console.log(this.props)
-    // this.clearStorage()
     // this.getHideWordsFromSyncStorage()
   }
 
   // DO NOT USE
-  getHideWordsFromSyncStorage = () => {
-    chrome.storage.sync.get(hideWordsStorageKey, (result) => {
-      let hideWords = [defaultHideWord]
-      if (chrome.runtime.lastError) {
-        console.log('error while getting hide words')
-      } else if (result[hideWordsStorageKey]) {
-        hideWords = result[hideWordsStorageKey]
-      }
-      // React does not properly rerender when calling setState in callback
-      console.log('retrieved')
-      this.setState({ hideWords })
-    })
-  }
+  // getHideWordsFromSyncStorage = () => {
+  //   chrome.storage.sync.get(hideWordsStorageKey, (result) => {
+  //     let hideWords = [defaultHideWord]
+  //     if (chrome.runtime.lastError) {
+  //       console.log('error while getting hide words')
+  //     } else if (result[hideWordsStorageKey]) {
+  //       hideWords = result[hideWordsStorageKey]
+  //     }
+  //     // React does not properly rerender when calling setState in callback
+  //     this.setState({ hideWords })
+  //   })
+  // }
 
   syncStorageAndState = (newHideWordsList) => {
     const storageKvp = {}
@@ -55,65 +50,87 @@ class App extends React.Component {
     })
   }
 
-  clearStorage = () => {
-    chrome.storage.sync.remove(hideWordsStorageKey, () => {
-      if (chrome.runtime.lastError) {
-        console.log('error while setting hide words')
-      } else {
-        console.log('successfully cleared hide words list')
-      }
-    })
-  }
-
   deleteHideWord = (removeWord) => {
-    let newHideWords = [...this.state.hideWords]
-    newHideWords = newHideWords.filter(hideWord => hideWord.word !== removeWord)
-    this.syncStorageAndState(newHideWords)
+    let { hideWords, displayHideWords } = this.state
+    hideWords = hideWords.filter(hideWord => hideWord.word !== removeWord)
+    displayHideWords = displayHideWords.filter(hideWord => hideWord.word !== removeWord)
+    this.syncStorageAndState(hideWords)
     // should setState in syncStorageAndState but it messes up the fadeOut animation
-    this.setState({hideWords: newHideWords})
+    this.setState({hideWords, displayHideWords})
   }
 
   addHideWord = (addWord) => {
     if (!addWord) {
       return
     }
-    const oldHideWords = [...this.state.hideWords]
+    const { hideWords, displayHideWords } = this.state
     // only add if word does not exist in list
-    const i = oldHideWords.findIndex(hideWord => hideWord.word === addWord)
+    const i = hideWords.findIndex(hideWord => hideWord.word === addWord)
     if (i < 0) {
+      const date = new Date()
       const newHideWord = {
         word: addWord,
-        date: new Date(),
+        lastModified: date,
+        id: date.toISOString()
       }
-      const newHideWordsList = [newHideWord, ...oldHideWords]
-      this.syncStorageAndState(newHideWordsList)
+      const newHideWords = [newHideWord, ...hideWords]
+      const newDisplayHideWords = [newHideWord, ...displayHideWords]
+      this.syncStorageAndState(newHideWords)
       // should setState in syncStorageAndState but it messes up the fadeOut animation
-      this.setState({hideWords: newHideWordsList})
+      this.setState({
+        hideWords: newHideWords,
+        displayHideWords: newDisplayHideWords
+      })
     }
   }
 
+  editHideWord = (originalWord, newWord) => {
+    let { hideWords } = this.state
+    hideWords = hideWords.map(hideWord => {
+      if (hideWord.word === originalWord) {
+        const date = new Date()
+        return {
+          word: newWord,
+          lastModified: date,
+          id: hideWord.id
+        }
+      }
+      return hideWord
+    })
+    this.syncStorageAndState(hideWords)
+    // should setState in syncStorageAndState but it messes up the fadeOut animation
+    this.setState({hideWords})
+  }
+
   handleSortBy = (newSortBy) => {
-    let newHideWords = [...this.state.hideWords]
+    let { hideWords, displayHideWords } = this.state
     if (newSortBy === sortBy.ABC) {
-      newHideWords = newHideWords.slice().sort((a, b) => a.word > b.word ? 1 : -1)
+      hideWords = hideWords.slice().sort((a, b) => a.word > b.word ? 1 : -1)
+      displayHideWords = displayHideWords.slice().sort((a, b) => a.word > b.word ? 1 : -1)
     } else if (newSortBy === sortBy.NEW) {
-      newHideWords = newHideWords.slice().sort((a, b) => b.date > a.date ? 1 : -1)
+      hideWords = hideWords.slice().sort((a, b) => b.lastModified > a.lastModified ? 1 : -1)
+      displayHideWords = displayHideWords.slice().sort((a, b) => b.lastModified > a.lastModified ? 1 : -1)
     } else if (newSortBy === sortBy.OLD) {
-      newHideWords = newHideWords.slice().sort((a, b) => a.date > b.date ? 1 : -1)
+      hideWords = hideWords.slice().sort((a, b) => a.lastModified > b.lastModified ? 1 : -1)
+      displayHideWords = displayHideWords.slice().sort((a, b) => a.lastModified > b.lastModified ? 1 : -1)
     }
     this.setState({
-      hideWords: newHideWords,
+      hideWords,
+      displayHideWords,
       sortBy: newSortBy
     })
   }
 
-  handleSearch = (displayHideWords) => {
-    this.setState({displayHideWords})
+  handleSearch = (searchResults, isSearching) => {
+    const displayHideWords = searchResults.map(result => this.state.hideWords[result.refIndex])
+    this.setState({
+      displayHideWords,
+      isSearching,
+    })
   }
 
   render() {
-    const allHideWords = this.state.hideWords.map(hideWord => hideWord.word)
-    console.log(allHideWords)
+    console.log(this.state)
     return (
       <Row id='popup-app'>
         <Col span={24}>
@@ -126,8 +143,9 @@ class App extends React.Component {
               addHideWord={this.addHideWord}
               handleSearch={this.handleSearch} />
             <HideList
-              hideWords={this.state.displayHideWords.length ? this.state.displayHideWords : this.state.hideWords.map(hideWord => hideWord.word)}
-              deleteHideWord={this.deleteHideWord} />
+              hideWords={this.state.isSearching ? this.state.displayHideWords : this.state.hideWords}
+              deleteHideWord={this.deleteHideWord}
+              editHideWord={this.editHideWord} />
           </Space>
         </Col>
       </Row>

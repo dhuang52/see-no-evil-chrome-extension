@@ -3,12 +3,13 @@ import HideListItem from './HideListItem'
 import { Row, Col } from 'antd'
 
 class HideList extends React.Component {
-  createItem = (word) => {
+  createItem = (hideWord) => {
     return (
       <HideListItem
-        word={word}
-        deleteItem={() => this.props.deleteHideWord(word)}
-        key={`hideListItem-${word}`} />
+        word={hideWord.word}
+        deleteItem={this.props.deleteHideWord}
+        editItem={this.props.editHideWord}
+        key={hideWord.id} />
     )
   }
 
@@ -16,7 +17,7 @@ class HideList extends React.Component {
     return (
       <Row className='hideList'>
         <Col span={20}>
-          {this.props.hideWords.map(word => this.createItem(word))}
+          {this.props.hideWords.map(hideWord => this.createItem(hideWord))}
         </Col>
       </Row>
     )

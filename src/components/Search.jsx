@@ -19,9 +19,9 @@ class Search extends React.Component {
     const value = e.target.value
     if (value) {
       const searchResults = this.fuse.search(value)
-      this.props.handleSearch(searchResults.map(result => result.item))
+      this.props.handleSearch(searchResults, true)
     } else {
-      this.props.handleSearch([])
+      this.props.handleSearch([], false)
     }
   }
 

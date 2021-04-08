@@ -9,10 +9,20 @@ const popup = document.getElementById(bodyId)
 ReactDOM.render(<Loading />, popup)
 
 const hideWordsStorageKey = 'hideWords'
+const date = new Date()
 const defaultHideWord = {
   word: 'add some words in the search bar',
-  date: new Date(),
+  lastModified: date,
+  id: date.toISOString()
 }
+
+// chrome.storage.sync.remove(hideWordsStorageKey, () => {
+//   if (chrome.runtime.lastError) {
+//     console.log('error while clearing hide words')
+//   } else {
+//     console.log('successfully cleared hide words list')
+//   }
+// })
 
 chrome.storage.sync.get(hideWordsStorageKey, (result) => {
   let hideWords = [defaultHideWord]
