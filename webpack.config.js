@@ -8,7 +8,9 @@ module.exports = env => {
     mode,
     entry: {
       popup: './src/popup.js',
-      contentScript: './src/contentScript.js'
+      background: './src/scripts/background.js',
+      youtubeHome: './src/scripts/youtubeHome.js',
+      youtubeWatch: './src/scripts/youtubeWatch.js',
     },
     output: {
       path: path.resolve(__dirname , 'dist'),
