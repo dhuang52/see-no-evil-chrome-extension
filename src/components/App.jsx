@@ -36,6 +36,7 @@ class App extends React.Component {
     chrome.storage.sync.get(hideWordsStorageKey, (result) => {
       let hideWords = [defaultHideWord]
       if (chrome.runtime.lastError) {
+        // TODO: display error message to user
         console.log('error while getting hide words')
       } else if (result[hideWordsStorageKey]) {
         hideWords = result[hideWordsStorageKey]
@@ -143,31 +144,27 @@ class App extends React.Component {
     })
   }
 
-  renderApp = () => {
-    return (
-      <Row id='popup-app'>
-        <Col span={24}>
-          <Space direction='vertical' style={{width: '100%'}}>
-            <Header
-              sortBy={this.state.sortBy}
-              handleSortBy={this.handleSortBy} />
-            <Search
-              hideWords={this.state.hideWords.map(hideWord => hideWord.word)}
-              addHideWord={this.addHideWord}
-              handleSearch={this.handleSearch} />
-            <HideList
-              hideWords={this.state.isSearching ? this.state.displayHideWords : this.state.hideWords}
-              deleteHideWord={this.deleteHideWord}
-              editHideWord={this.editHideWord} />
-          </Space>
-        </Col>
-      </Row>
-    )
-  }
+  renderApp = () => (
+    <Row id='popup-app'>
+      <Col span={24}>
+        <Space direction='vertical' style={{width: '100%'}}>
+          <Header
+            sortBy={this.state.sortBy}
+            handleSortBy={this.handleSortBy} />
+          <Search
+            hideWords={this.state.hideWords.map(hideWord => hideWord.word)}
+            addHideWord={this.addHideWord}
+            handleSearch={this.handleSearch} />
+          <HideList
+            hideWords={this.state.isSearching ? this.state.displayHideWords : this.state.hideWords}
+            deleteHideWord={this.deleteHideWord}
+            editHideWord={this.editHideWord} />
+        </Space>
+      </Col>
+    </Row>
+  )
 
-  renderLoading = () => {
-    return (<Loading />)
-  }
+  renderLoading = () => (<Loading />)
 
   render() {
     return this.state.isLoading ? this.renderLoading() : this.renderApp()
