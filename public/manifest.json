@@ -1,7 +1,7 @@
 {
   "name": "See No Evil",
   "description" : "Hide spoilers",
-  "permissions": ["storage", "scripting", "webNavigation"],
+  "permissions": ["storage", "scripting", "webNavigation", "webRequest"],
   "host_permissions": ["*://*.youtube.com/*"],
   "action": {
     "default_popup": "popup.html"

@@ -1,4 +1,4 @@
-import urlFilters from '../constants/urlFilters'
+import { urlFilters, matchPatterns } from '../constants/filter'
 
 // YouTube home page
 chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
@@ -21,3 +21,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
   console.log('YouTube Channel')
   const tabId = details.tabId
 }, urlFilters.youtubeChannel)
+
+chrome.webRequest.onCompleted.addListener(details => {
+  console.log('youtube load request complete')
+}, {urls: [matchPatterns.youtubeLoad]});

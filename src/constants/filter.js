@@ -11,10 +11,13 @@ const youtubeChannelFilter = {
   ]
 }
 
-const urlFilters = {
+export const urlFilters = {
   youtubeHome: youtubeHomeFilter,
   youtubeWatch: youtubeWatchFilter,
   youtubeChannel: youtubeChannelFilter,
 }
 
-export default urlFilters
+export const matchPatterns = {
+  youtube: '*://*.youtube.com/*',
+  youtubeLoad: '*://*.youtube.com/youtubei/v1/browse?key=*',
+}
