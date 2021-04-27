@@ -18,6 +18,6 @@ export const urlFilters = {
 }
 
 export const matchPatterns = {
-  youtube: '*://*.youtube.com/*',
-  youtubeLoad: '*://*.youtube.com/youtubei/v1/browse?key=*',
+  youtube: '*://*.youtube.com/',
+  youtubeBrowse: '*://*.youtube.com/youtubei/v1/browse?key=*',
 }
