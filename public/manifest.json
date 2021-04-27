@@ -9,10 +9,6 @@
   "background": {
     "service_worker": "background.bundle.js"
   },
-  "content_scripts": [
-    { "matches": ["*://*.youtube.com/"], "js": ["youtubeHome.bundle.js"] },
-    { "matches": ["*://*.youtube.com/watch*"], "js": ["youtubeWatch.bundle.js"] }
-  ],
   "version": "1.0",
   "manifest_version": 3
 }
