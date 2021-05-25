@@ -29,14 +29,10 @@ class YouTubeHomeBlurScript extends BlurScript {
     return videoMetaDataList
   }
 
-  handleBlur() {
-    console.log('YouTubeHomeBlurScript handleblur')
-    if (this.hideList) {
-      const videoMetaDataList = this.getAllVideoMetaData()
-      console.log(videoMetaDataList, this.hideList)
-    } else {
-      this.initHideListAndHandleBlur()
-    }
+  _blur() {
+    console.log('YouTube home blur')
+    const videoMetaDataList = this.getAllVideoMetaData()
+    console.log(videoMetaDataList, this.hideList)
   }
 }
 

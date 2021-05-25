@@ -1,5 +1,5 @@
 /**
- * Base class for content scripts that blur the contents on the page
+ * Base class for content scripts that blur the contents on the page based off the hide list
  */
 export default class BlurScript {
   constructor() {
@@ -10,9 +10,18 @@ export default class BlurScript {
 
   /**
    * Blur content. Implementation left up to child class.
+   * Not meant to be called outside the class.
    */
+  _blur() {
+    console.log('Child class has no implementation for blur() yet')
+  }
+
   handleBlur() {
-    console.log('Child class has no implementation for handleBlur yet')
+    if (this.hideList) {
+      this._blur()
+    } else {
+      this.initHideListAndHandleBlur()
+    }
   }
 
   /**
@@ -30,7 +39,7 @@ export default class BlurScript {
   }
 
   /**
-   * Initialize the in memory hide list and call handle blur
+   * Initialize the in memory hide list and call handleBlur
    */
   initHideListAndHandleBlur() {
     chrome.storage.sync.get(this._storageKey, (result) => {
