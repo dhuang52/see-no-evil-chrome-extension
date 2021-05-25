@@ -1,13 +1,16 @@
-import "regenerator-runtime/runtime.js";
 import { urlFilters, matchPatterns } from '../constants/filter'
-import hideListManager from './utils/HideListManager'
 
 // YouTube home page
 chrome.webRequest.onCompleted.addListener(details => {
   console.log('youtube home request complete')
   console.log(details)
-
-}, {urls: [matchPatterns.youtube]});
+  const tabId = details.tabId
+  console.log(tabId)
+  chrome.scripting.executeScript({
+    target: {tabId: tabId},
+    files: ['youtubeHome.bundle.js']
+  })
+}, {urls: [matchPatterns.youtube]})
 
 // YouTube home page revisited
 chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
@@ -52,4 +55,4 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
 chrome.webRequest.onCompleted.addListener(details => {
   console.log('youtube browse request complete')
   console.log(details)
-}, {urls: [matchPatterns.youtubeBrowse]});
+}, {urls: [matchPatterns.youtubeBrowse]})

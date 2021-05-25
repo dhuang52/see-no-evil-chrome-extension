@@ -4,9 +4,9 @@ export const getAllVideosOnHomePage = () => {
 }
 
 export const getVideoChannel = (videoMetaData) => {
-  return videoMetaData.querySelector('#channel-name').querySelector('#text-container').textContent
+  return videoMetaData.querySelector('#channel-name').querySelector('#text-container').textContent.trim()
 }
 
 export const getVideoTitle = (videoMetaData) => {
-  return videoMetaData.querySelector('#video-title').textContent
+  return videoMetaData.querySelector('#video-title').textContent.trim()
 }
