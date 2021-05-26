@@ -22,7 +22,21 @@ export default class BlurScript {
 
     this.storageKey = 'hideWords'
     this.hideList
+    // track the blurred elements for easy removal
+    //  blurredElements[hideWord] = domElement
+    this.blurredElements = {}
     this.initListener()
+  }
+
+  /**
+   * Given a list of hide words and a DOM element that is blurred, update the blurredElements mappping so that
+   * for each hide word in hideWords, blurredElements[hideWord] = DOM element
+   * @param {*} hideWords list of hideWords
+   * @param {*} domElement element on DOM that has been blurred
+   */
+  _updateBlurredElementsList(hideWords, domElement) {
+    hideWords.forEach(hideWord => this.blurredElements[hideWord] ?
+      this.blurredElements[hideWord].push(domElement) : this.blurredElements[hideWord] = [domElement])
   }
 
   /**
@@ -30,12 +44,20 @@ export default class BlurScript {
    * Not meant to be called outside the class.
    */
   _blur() {
-    console.log('Child class has no implementation for blur() yet')
+    console.log('Child class has no implementation for _blur() yet')
+  }
+
+  /**
+   * Unblur content. 
+   */
+  _cleanBlurredElements() {
+    console.log('Child class has no implementation for _cleanBlurredElements() yet')
   }
 
   handleBlur() {
     if (this.hideList) {
       this.fuse.setCollection(this.hideList)
+      this._cleanBlurredElements()
       this._blur()
     } else {
       this.initHideListAndHandleBlur()

@@ -10,3 +10,7 @@ export const getVideoChannel = (videoMetaData) => {
 export const getVideoTitle = (videoMetaData) => {
   return videoMetaData.querySelector('#video-title').textContent.trim()
 }
+
+export const getContent = (ytdRichItemRenderer) => {
+  return ytdRichItemRenderer.querySelector('#content')
+}
