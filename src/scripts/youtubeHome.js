@@ -7,6 +7,7 @@ console.log('youtube home injected')
 class YouTubeHomeBlurScript extends BlurScript {
   constructor() {
     super()
+    this.blurLayerClass = 'sne-blur-layer'
   }
 
   getAllVideoMetaData = () => {
@@ -29,11 +30,37 @@ class YouTubeHomeBlurScript extends BlurScript {
     return videoMetaDataList
   }
 
+  /**
+   * Returns true if videoMetaData contains text similar to a word in the hide list.
+   * Leverage Fuse fuzzy search to determine similarity (configured in BlurScript).
+   * @param videoMetaData 
+   * @returns true if meta data is similar to a word in the hide list, false otherwise
+   */
+  _filter(videoMetaData) {
+    const videoChannel = videoMetaData.videoChannel
+    const videoTitle = videoMetaData.videoTitle
+    const videoChannelLikeHideWord = this.fuse.search(videoChannel)
+    const videoTitleLikeHideWord = this.fuse.search(videoTitle)
+    return videoChannelLikeHideWord.length || videoTitleLikeHideWord.length
+  }
+
+  _injectInlineBlurStyle(ytdRichItemRenderer) {
+    const content = ytdRichItemRenderer.querySelector('#content')
+    content.className = `${content.className} ${this.blurLayerClass}`
+  }
+
   _blur() {
     console.log('YouTube home blur')
     const videoMetaDataList = this.getAllVideoMetaData()
-    console.log(videoMetaDataList, this.hideList)
+    console.log('hideList', this.hideList)
+    // filter videoMetaDataList if hide list contains words in videoChannel and videoTitle
+    const filteredVideoMetaDataList = videoMetaDataList.filter(this._filter, this)
+    console.log('filteredVideoMetaDataList', filteredVideoMetaDataList)
+    // apply blur class to dom elements in videoMetaDataList
+    filteredVideoMetaDataList.forEach(videoMetaData => {
+      this._injectInlineBlurStyle(videoMetaData.dom)
+    })
   }
 }
 
-new YouTubeHomeBlurScript()
+new YouTubeHomeBlurScript().handleBlur()

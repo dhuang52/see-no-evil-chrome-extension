@@ -1,8 +1,25 @@
+import Fuse from 'fuse.js'
+import '../../styles/blur.css'
+
 /**
  * Base class for content scripts that blur the contents on the page based off the hide list
  */
 export default class BlurScript {
   constructor() {
+    // Would be nice to have dynamic threshold dependent on the difference in length between the hide 
+    // word and search pattern
+    //    ex: threshold = Math.abs(hideWord.length - pattern.length) / Math.max(ideWord.length, pattern.length)
+    // Fuse and other fuzzy search libraries do not support this feature yet.
+    // 0 = exact match, 1 = match anything
+    const threshold = .4
+    const objKeys = ['word']
+    this.fuse = new Fuse([], {
+      keys: objKeys,
+      ignoreLocation: true,
+      includeScore: true,
+      threshold
+    })
+
     this.storageKey = 'hideWords'
     this.hideList
     this.initListener()
@@ -18,6 +35,7 @@ export default class BlurScript {
 
   handleBlur() {
     if (this.hideList) {
+      this.fuse.setCollection(this.hideList)
       this._blur()
     } else {
       this.initHideListAndHandleBlur()
