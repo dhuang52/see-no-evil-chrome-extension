@@ -64,7 +64,6 @@ export default class BlurScript {
       if (chrome.runtime.lastError) {
         // TODO: display error message to user
         console.log('error while getting hide words', chrome.runtime.lastError)
-        reject(chrome.runtime.lastError)
       } else if (result[this.storageKey]) {
         this.hideList = result[this.storageKey]
         this.handleBlur()
