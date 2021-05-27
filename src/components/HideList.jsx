@@ -9,6 +9,7 @@ class HideList extends React.Component {
         word={hideWord.word}
         deleteItem={this.props.deleteHideWord}
         editItem={this.props.editHideWord}
+        id={hideWord.id}
         key={hideWord.id} />
     )
   }

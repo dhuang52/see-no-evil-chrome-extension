@@ -9,11 +9,11 @@ import '../styles/App.css'
 import 'antd/dist/antd.css'
 
 const hideWordsStorageKey = 'hideWords'
-const defaultDate = new Date()
+const dateNow = Date.now()
 const defaultHideWord = {
   word: 'add some words in the search bar',
-  lastModified: defaultDate,
-  id: defaultDate.toISOString()
+  lastModified: dateNow,
+  id: dateNow
 }
 
 class App extends React.Component {
@@ -79,11 +79,11 @@ class App extends React.Component {
     // only add if word does not exist in list
     const i = hideWords.findIndex(hideWord => hideWord.word === addWord)
     if (i < 0) {
-      const date = new Date()
+      const dateNow = Date.now()
       const newHideWord = {
         word: addWord,
-        lastModified: date,
-        id: date.toISOString()
+        lastModified: dateNow,
+        id: dateNow
       }
       const newHideWords = [newHideWord, ...hideWords]
       const newDisplayHideWords = [newHideWord, ...displayHideWords]
@@ -96,17 +96,16 @@ class App extends React.Component {
     }
   }
 
-  editHideWord = (originalWord, newWord) => {
+  editHideWord = (hideWordId, newWord) => {
     if (!newWord) {
       return
     }
     let { hideWords } = this.state
-    hideWords = hideWords.map(hideWord => {
-      if (hideWord.word === originalWord) {
-        const date = new Date()
+    hideWords = hideWords.map(hideWord => { 
+      if (hideWord.id === hideWordId) {
         return {
           word: newWord,
-          lastModified: date,
+          lastModified: Date.now(),
           id: hideWord.id
         }
       }

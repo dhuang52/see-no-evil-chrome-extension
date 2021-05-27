@@ -11,7 +11,7 @@ class HideListItem extends React.Component {
   onChange = (e) => {
     const newValue = e.target.value
     const originalValue = this.props.word
-    this.props.editItem(originalValue, newValue)
+    this.props.editItem(this.props.id, newValue)
   }
 
   removeItem = () => {
