@@ -1,3 +1,9 @@
 .sne-blur-layer {
   filter: blur(6px);
+  transition: filter .1s ease-out;
+}
+
+.sne-blur-layer:hover {
+  filter: blur(0px);
+  transition: filter 2s ease-in;
 }
