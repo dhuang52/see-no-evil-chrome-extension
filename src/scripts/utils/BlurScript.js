@@ -54,6 +54,14 @@ export default class BlurScript {
     console.log('Child class has no implementation for _cleanBlurredElements() yet')
   }
 
+  /**
+   * Add class to content to apply blur css
+   * @param {*} content DOM element that needs to be blurred
+   */
+  _injectInlineBlurStyle(content) {
+    content.className = `${content.className} ${this.blurLayerClass}`
+  }
+
   handleBlur() {
     if (this.hideList) {
       this.fuse.setCollection(this.hideList)

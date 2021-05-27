@@ -46,11 +46,6 @@ class YouTubeHomeBlurScript extends BlurScript {
     return match
   }
 
-  _injectInlineBlurStyle(ytdRichItemRenderer) {
-    const content = getContent(ytdRichItemRenderer)
-    content.className = `${content.className} ${this.blurLayerClass}`
-  }
-
   _blur() {
     const videoMetaDataList = getAllVideoMetaDataOnHomePage()
     // filter videoMetaDataList if hide list contains words in videoChannel and videoTitle
@@ -58,7 +53,8 @@ class YouTubeHomeBlurScript extends BlurScript {
     console.log('filteredVideoMetaDataList', filteredVideoMetaDataList)
     // apply blur class to dom elements in videoMetaDataList
     filteredVideoMetaDataList.forEach(videoMetaData => {
-      this._injectInlineBlurStyle(videoMetaData.dom)
+      const content = getContent(videoMetaData.dom)
+      this._injectInlineBlurStyle(content)
     })
   }
 }
