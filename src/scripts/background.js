@@ -1,11 +1,10 @@
 import { urlFilters, matchPatterns } from '../constants/filter'
 
-// YouTube home page
+// Event listners for: YouTube home
+// YouTube home page visited from url
 chrome.webRequest.onCompleted.addListener(details => {
-  console.log('youtube home request complete')
-  console.log(details)
+  console.log('YouTubeHome: chrome.webRequest.onCompleted')
   const tabId = details.tabId
-  console.log(tabId)
   chrome.scripting.executeScript({
     target: {tabId: tabId},
     files: ['youtubeHome.bundle.js']
@@ -30,7 +29,7 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
    * case 1.1 and 2.1 though, so the logic in both listeners will have to be executed (could be repeated work).
    */
   if (details.transitionQualifiers.includes('forward_back')) {
-    console.log('YouTube home', details)
+    console.log('YouTubeHome: chrome.webNavigation.onHistoryStateUpdated')
     const tabId = details.tabId
     chrome.scripting.executeScript({
       target: {tabId},
@@ -39,20 +38,25 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
   }
 }, urlFilters.youtubeHome)
 
-// YouTube watch page
+// Event listener for: YouTube watch
 chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
   console.log('YouTube Watch')
   const tabId = details.tabId
 }, urlFilters.youtubeWatch)
 
-// YouTube channel page
+// Event listener for: YouTube channel
 chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
   console.log('YouTube Channel')
   const tabId = details.tabId
 }, urlFilters.youtubeChannel)
 
-// YouTube browse request
+// Event listeners for loading new videos
 chrome.webRequest.onCompleted.addListener(details => {
-  console.log('youtube browse request complete')
+  console.log('YouTube Home: browse request')
   console.log(details)
 }, {urls: [matchPatterns.youtubeBrowse]})
+
+chrome.webRequest.onCompleted.addListener(details => {
+  console.log('YouTube Watch: next request')
+  console.log(details)
+}, {urls: [matchPatterns.youtubeNext]})
