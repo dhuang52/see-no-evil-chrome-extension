@@ -1,5 +1,5 @@
 // import "regenerator-runtime/runtime.js"
-import { getAllVideosOnHomePage, getVideoTitle, getVideoChannel, getContent } from './utils/youtube'
+import { getAllVideoMetaDataOnHomePage, getContent } from './utils/youtube'
 import BlurScript from './utils/BlurScript'
 
 console.log('youtube home injected')
@@ -8,26 +8,6 @@ class YouTubeHomeBlurScript extends BlurScript {
   constructor() {
     super()
     this.blurLayerClass = 'sne-blur-layer'
-  }
-
-  getAllVideoMetaData = () => {
-    const videoMetaDataList = []
-    const ytdRichItemRendererList = getAllVideosOnHomePage()
-    for(let i = 0; i < ytdRichItemRendererList.length; i++) {
-      const ytdRichItemRenderer = ytdRichItemRendererList[i]
-      const videoMetaData = ytdRichItemRenderer.querySelector('#content ytd-rich-grid-media #dismissible #details #meta')
-      if (!videoMetaData) {
-        continue
-      }
-      const videoChannel = getVideoChannel(videoMetaData)
-      const videoTitle = getVideoTitle(videoMetaData)
-      videoMetaDataList.push({
-        videoChannel,
-        videoTitle,
-        dom: ytdRichItemRenderer
-      })
-    }
-    return videoMetaDataList
   }
 
   _cleanBlurredElements() {
@@ -72,7 +52,7 @@ class YouTubeHomeBlurScript extends BlurScript {
   }
 
   _blur() {
-    const videoMetaDataList = this.getAllVideoMetaData()
+    const videoMetaDataList = getAllVideoMetaDataOnHomePage()
     // filter videoMetaDataList if hide list contains words in videoChannel and videoTitle
     const filteredVideoMetaDataList = videoMetaDataList.filter(this._filter, this)
     console.log('filteredVideoMetaDataList', filteredVideoMetaDataList)
