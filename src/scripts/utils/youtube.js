@@ -17,20 +17,20 @@ export const getContent = (ytdRichItemRenderer) => {
 
 export const getAllVideoMetaDataOnHomePage = () => {
   const videoMetaDataList = []
-    const ytdRichItemRendererList = getAllVideosOnHomePage()
-    for(let i = 0; i < ytdRichItemRendererList.length; i++) {
-      const ytdRichItemRenderer = ytdRichItemRendererList[i]
-      const videoMetaData = ytdRichItemRenderer.querySelector('#content ytd-rich-grid-media #dismissible #details #meta')
-      if (!videoMetaData) {
-        continue
-      }
-      const videoChannel = getVideoChannel(videoMetaData)
-      const videoTitle = getVideoTitle(videoMetaData)
-      videoMetaDataList.push({
-        videoChannel,
-        videoTitle,
-        dom: ytdRichItemRenderer
-      })
+  const ytdRichItemRendererList = getAllVideosOnHomePage()
+  for(let i = 0; i < ytdRichItemRendererList.length; i++) {
+    const ytdRichItemRenderer = ytdRichItemRendererList[i]
+    const videoMetaData = ytdRichItemRenderer.querySelector('#content ytd-rich-grid-media #dismissible #details #meta')
+    if (!videoMetaData) {
+      continue
     }
-    return videoMetaDataList
+    const videoChannel = getVideoChannel(videoMetaData)
+    const videoTitle = getVideoTitle(videoMetaData)
+    videoMetaDataList.push({
+      videoChannel,
+      videoTitle,
+      dom: ytdRichItemRenderer
+    })
+  }
+  return videoMetaDataList
 }
