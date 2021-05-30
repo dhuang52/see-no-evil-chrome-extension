@@ -1,5 +1,5 @@
 // import "regenerator-runtime/runtime.js"
-import { getAllVideoMetaDataOnHomePage, getContent } from './utils/youtube'
+import { getAllVideoMetaDataOnHomePage, getContent, getYouTubeHomeContentRoot } from './utils/youtube'
 import BlurScript from './utils/BlurScript'
 
 console.log('youtube home injected')
@@ -8,6 +8,17 @@ class YouTubeHomeBlurScript extends BlurScript {
   constructor() {
     super()
     this.blurLayerClass = 'sne-blur-layer'
+    this.videoMetaDataList = []
+    this._initContentObserver()
+  }
+
+  _initContentObserver() {
+    const contentRoot = getYouTubeHomeContentRoot()
+    const handleBlurBindThis = this.handleBlur.bind(this)
+    // If `this` (YouTubeHomeBlurScript) is not explicitly binded to the callback, the
+    // `this` in the callback will reference the MutationObserver object (I think)
+    this.observer = new MutationObserver(handleBlurBindThis)
+    this.observer.observe(contentRoot, { childList: true })
   }
 
   _cleanBlurredElements() {
@@ -47,9 +58,9 @@ class YouTubeHomeBlurScript extends BlurScript {
   }
 
   _blur() {
-    const videoMetaDataList = getAllVideoMetaDataOnHomePage()
+    this.videoMetaDataList = getAllVideoMetaDataOnHomePage()
     // filter videoMetaDataList if hide list contains words in videoChannel and videoTitle
-    const filteredVideoMetaDataList = videoMetaDataList.filter(this._filter, this)
+    const filteredVideoMetaDataList = this.videoMetaDataList.filter(this._filter, this)
     console.log('filteredVideoMetaDataList', filteredVideoMetaDataList)
     // apply blur class to dom elements in videoMetaDataList
     filteredVideoMetaDataList.forEach(videoMetaData => {

@@ -59,10 +59,13 @@ export default class BlurScript {
    * @param {*} content DOM element that needs to be blurred
    */
   _injectInlineBlurStyle(content) {
-    content.className = `${content.className} ${this.blurLayerClass}`
+    if (!content.className.includes(this.blurLayerClass)) {
+      content.className = `${content.className} ${this.blurLayerClass} `
+    }
   }
 
   handleBlur() {
+    console.log(this.hideList)
     if (this.hideList) {
       this.fuse.setCollection(this.hideList)
       this._cleanBlurredElements()
@@ -80,7 +83,6 @@ export default class BlurScript {
       // Update local copy of hideWords if there was a new value
       if (namespace === 'sync' && changes[this.storageKey]?.newValue) {
         this.hideList = changes[this.storageKey].newValue
-        console.log(this.hideList)
         this.handleBlur()
       }
     });

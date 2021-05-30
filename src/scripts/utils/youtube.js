@@ -1,6 +1,10 @@
+export const getYouTubeHomeContentRoot = () => {
+  return document.getElementById('contents')
+}
+
 const getAllVideosOnHomePage = () => {
-  const contents = document.getElementById('contents')
-  return contents.getElementsByTagName('ytd-rich-item-renderer')
+  const contentRoot = getYouTubeHomeContentRoot()
+  return contentRoot.getElementsByTagName('ytd-rich-item-renderer')
 }
 
 const getVideoChannel = (videoMetaData) => {
