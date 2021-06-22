@@ -1,34 +1,42 @@
-export const getYouTubeHomeContentRoot = () => {
-  return document.getElementById('contents')
+import { contentRootQuerySelector, videoTagName, videoMetaDataQuerySelector } from '../../constants/sortBy'
+
+export const getChannelName = (videoNode) => {
+  return videoNode.querySelector('#channel-name #text-container').textContent.trim()
 }
 
-const getAllVideosOnHomePage = () => {
-  const contentRoot = getYouTubeHomeContentRoot()
-  return contentRoot.getElementsByTagName('ytd-rich-item-renderer')
-}
-
-const getVideoChannel = (videoMetaData) => {
-  return videoMetaData.querySelector('#channel-name').querySelector('#text-container').textContent.trim()
-}
-
-const getVideoTitle = (videoMetaData) => {
-  return videoMetaData.querySelector('#video-title').textContent.trim()
+export const getVideoTitle = (videoNode) => {
+  return videoNode.querySelector('#video-title').textContent.trim()
 }
 
 export const getContent = (ytdRichItemRenderer) => {
   return ytdRichItemRenderer.querySelector('#content')
 }
 
-export const getAllVideoMetaDataOnHomePage = () => {
+export const getContentRoot = (pageType) => {
+  const query = contentRootQuerySelector[pageType]
+  return document.querySelector(query)
+}
+
+export const getAllVideosOnPage = (pageType) => {
+  const contentRoot = getContentRoot(pageType)
+  console.log(pageType, videoTagName[pageType])
+  if (!contentRoot) {
+    return []
+  }
+  const nodeList = Array.apply(null, contentRoot.getElementsByTagName(videoTagName[pageType]))
+  return nodeList.filter(node => !node.querySelector('ytd-display-ad-renderer'))
+}
+
+export const getAllVideoMetaDataOnPage = (pageType) => {
   const videoMetaDataList = []
-  const ytdRichItemRendererList = getAllVideosOnHomePage()
+  const ytdRichItemRendererList = getAllVideosOnPage(pageType)
   for(let i = 0; i < ytdRichItemRendererList.length; i++) {
     const ytdRichItemRenderer = ytdRichItemRendererList[i]
-    const videoMetaData = ytdRichItemRenderer.querySelector('#content ytd-rich-grid-media #dismissible #details #meta')
+    const videoMetaData = ytdRichItemRenderer.querySelector(videoMetaDataQuerySelector[pageType])
     if (!videoMetaData) {
       continue
     }
-    const videoChannel = getVideoChannel(videoMetaData)
+    const videoChannel = getChannelName(videoMetaData)
     const videoTitle = getVideoTitle(videoMetaData)
     videoMetaDataList.push({
       videoChannel,

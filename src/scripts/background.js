@@ -1,4 +1,5 @@
 import { urlFilters, matchPatterns } from '../constants/filter'
+import { youTubePage } from '../constants/sortBy'
 
 // Event listners for: YouTube home
 // YouTube home page visited from url
@@ -31,32 +32,47 @@ chrome.webNavigation.onHistoryStateUpdated.addListener(details => {
   if (details.transitionQualifiers.includes('forward_back')) {
     console.log('YouTubeHome: chrome.webNavigation.onHistoryStateUpdated')
     const tabId = details.tabId
-    chrome.scripting.executeScript({
-      target: {tabId},
-      files: ['youtubeHome.bundle.js']
-    })
+    // chrome.scripting.executeScript({
+    //   target: {tabId},
+    //   files: ['youtubeHome.bundle.js']
+    // })
   }
 }, urlFilters.youtubeHome)
 
-// Event listener for: YouTube watch
-chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
-  console.log('YouTube Watch')
+chrome.webRequest.onCompleted.addListener(details => {
+  console.log('YouTubeWatch: chrome.webRequest.onCompleted')
   const tabId = details.tabId
-}, urlFilters.youtubeWatch)
+  chrome.scripting.executeScript({
+    target: {tabId: tabId},
+    files: ['youtubeHome.bundle.js']
+  })
+}, {urls: [matchPatterns.youtubeWatch]})
+
+// Event listener for: YouTube watch
+// chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
+//   console.log('YouTube Watch')
+//   const tabId = details.tabId
+//   // chrome.tabs.sendMessage(tabId, youTubePage.WATCH)
+//   chrome.scripting.executeScript({
+//     target: {tabId: tabId},
+//     files: ['youtubeHome.bundle.js']
+//   })
+// }, urlFilters.youtubeWatch)
 
 // Event listener for: YouTube channel
 chrome.webNavigation.onHistoryStateUpdated.addListener(function(details) {
   console.log('YouTube Channel')
   const tabId = details.tabId
+  chrome.tabs.sendMessage(tabId, youTubePage.CHANNEL)
 }, urlFilters.youtubeChannel)
 
 // Event listeners for loading new videos
-chrome.webRequest.onCompleted.addListener(details => {
-  console.log('YouTube Home: browse request')
-  console.log(details)
-}, {urls: [matchPatterns.youtubeBrowse]})
+// chrome.webRequest.onCompleted.addListener(details => {
+//   console.log('YouTube Home: browse request')
+//   console.log(details)
+// }, {urls: [matchPatterns.youtubeBrowse]})
 
-chrome.webRequest.onCompleted.addListener(details => {
-  console.log('YouTube Watch: next request')
-  console.log(details)
-}, {urls: [matchPatterns.youtubeNext]})
+// chrome.webRequest.onCompleted.addListener(details => {
+//   console.log('YouTube Watch: next request')
+//   console.log(details)
+// }, {urls: [matchPatterns.youtubeNext]})

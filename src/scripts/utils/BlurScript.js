@@ -1,3 +1,4 @@
+// import "regenerator-runtime/runtime.js"
 import Fuse from 'fuse.js'
 import '../../styles/blur.css'
 
@@ -40,14 +41,6 @@ export default class BlurScript {
   }
 
   /**
-   * Blur content. Implementation left up to child class.
-   * Not meant to be called outside the class.
-   */
-  _blur() {
-    console.log('Child class has no implementation for _blur() yet')
-  }
-
-  /**
    * Unblur content. 
    */
   _cleanBlurredElements() {
@@ -60,18 +53,33 @@ export default class BlurScript {
    */
   _injectInlineBlurStyle(content) {
     if (!content.className.includes(this.blurLayerClass)) {
+      // TODO: use https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList/add instead
       content.className = `${content.className} ${this.blurLayerClass} `
     }
   }
 
-  handleBlur() {
-    console.log(this.hideList)
+  getNodes() {
+    console.log('Child class has no implementation for getNodes() yet')
+  }
+
+  _parseNodes(nodes) {
+    console.log('Child class has no implementation for _parseNodes() yet')
+  }
+
+  _filterParsedNodes(parsedNodes) {
+    console.log('Child class has no implementation for _filterParsedNodes() yet')
+  }
+
+  updateDom(nodes) {
     if (this.hideList) {
       this.fuse.setCollection(this.hideList)
       this._cleanBlurredElements()
-      this._blur()
+
+      const parsedNodes = this._parseNodes(nodes)
+      const filteredNodes = this._filterParsedNodes(parsedNodes)
+      this._blurNodes(filteredNodes)
     } else {
-      this.initHideListAndHandleBlur()
+      this.initHideListAndUpdateDom()
     }
   }
 
@@ -83,22 +91,22 @@ export default class BlurScript {
       // Update local copy of hideWords if there was a new value
       if (namespace === 'sync' && changes[this.storageKey]?.newValue) {
         this.hideList = changes[this.storageKey].newValue
-        this.handleBlur()
+        this.updateDom(this.getNodes())
       }
     });
   }
 
   /**
-   * Initialize the in memory hide list and call handleBlur
+   * Initialize the in memory hide list and call updateDom
    */
-  initHideListAndHandleBlur() {
+  initHideListAndUpdateDom() {
     chrome.storage.sync.get(this._storageKey, (result) => {
       if (chrome.runtime.lastError) {
         // TODO: display error message to user
         console.log('error while getting hide words', chrome.runtime.lastError)
       } else if (result[this.storageKey]) {
         this.hideList = result[this.storageKey]
-        this.handleBlur()
+        this.updateDom(this.getNodes())
       }
       // if at this point, then user hasn't added any words to the hide list
     })

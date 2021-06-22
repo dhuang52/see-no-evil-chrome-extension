@@ -1,5 +1,5 @@
-// import "regenerator-runtime/runtime.js"
-import { getAllVideoMetaDataOnHomePage, getContent, getYouTubeHomeContentRoot } from './utils/youtube'
+import { getAllVideoMetaDataOnPage, getContent, getAllVideosOnPage, getVideoTitle, getChannelName } from './utils/youtube'
+import { videoTagName } from '../constants/sortBy'
 import BlurScript from './utils/BlurScript'
 
 console.log('youtube home injected')
@@ -9,65 +9,80 @@ class YouTubeHomeBlurScript extends BlurScript {
     super()
     this.blurLayerClass = 'sne-blur-layer'
     this.videoMetaDataList = []
+    // TODO: dynamically set
+    this.pageType = 'watch'
     this._initContentObserver()
   }
 
   _initContentObserver() {
-    const contentRoot = getYouTubeHomeContentRoot()
-    const handleBlurBindThis = this.handleBlur.bind(this)
-    // If `this` (YouTubeHomeBlurScript) is not explicitly binded to the callback, the
-    // `this` in the callback will reference the MutationObserver object (I think)
-    this.observer = new MutationObserver(handleBlurBindThis)
-    this.observer.observe(contentRoot, { childList: true })
+    const contentRoot = document.querySelector('ytd-page-manager')
+
+    this.observer = new MutationObserver((mutations) => {
+      const relevantNodes = []
+      mutations.forEach(mutationRecord => {
+        if (mutationRecord.addedNodes) {
+          mutationRecord.addedNodes.forEach(addedNode => {
+            if (addedNode.localName === videoTagName.home || addedNode.localName === videoTagName.watch) {
+              relevantNodes.push(addedNode)
+            }
+          })
+        }
+      })
+
+      if (relevantNodes.length) {
+        console.log(relevantNodes)
+        this.updateDom(relevantNodes)
+      }
+    })
+    const mutationObserverOptions = {
+      childList: true,
+      subtree: true,
+    }
+    this.observer.observe(contentRoot, mutationObserverOptions)
+  }
+
+  getNodes() {
+    return getAllVideosOnPage(this.pageType)
+  }
+
+  _parseNodes(nodes) {
+    return nodes.map(node => ({
+      channelName: getChannelName(node),
+      videoTitle: getVideoTitle(node),
+      node
+    }))
+  }
+
+  _filterParsedNodes(parsedNodes) {
+    return parsedNodes.filter(parsedNode => {
+      const { channelName, videoTitle, node } = parsedNode 
+      const hideWordMatches = [...this.fuse.search(channelName), ...this.fuse.search(videoTitle)].map(fuseItem => fuseItem.item.word)
+      if (hideWordMatches.length) {
+        this._updateBlurredElementsList(hideWordMatches, node)
+        return true
+      }
+      return false
+    })
+  }
+
+  _blurNodes(parsedNodes) {
+    parsedNodes.forEach(parsedNode => {
+      this._injectInlineBlurStyle(parsedNode.node)
+    })
   }
 
   _cleanBlurredElements() {
-    // find hideWords in blurredElements that are not in hideList retrieved from storage API and
-    // remove the blur class from the dom elements
-    const difference = Object.entries(this.blurredElements).filter(entry => !this.hideList.includes(entry[0]))
-    const domElements = difference.map(entry => entry[1])
-    const hideWords = difference.map(entry => entry[0])
-    domElements.forEach(domElementList => {
-      domElementList.forEach(domElement => {
-        const content = getContent(domElement)
-        // split by space, and remove last class name (the blur class)
-        const originalClassName = content.className.split(' ').slice(0, -1).join(' ')
-        content.className = originalClassName
-      })
-    })
-    hideWords.forEach(hideWord => delete this.blurredElements[hideWord])
-  }
-
-  /**
-   * Returns true if videoMetaData contains text similar to a word in the hide list.
-   * Leverage Fuse fuzzy search to determine similarity (configured in BlurScript).
-   * @param videoMetaData 
-   * @returns true if meta data is similar to a word in the hide list, false otherwise
-   */
-  _filter(videoMetaData) {
-    const videoChannel = videoMetaData.videoChannel
-    const videoTitle = videoMetaData.videoTitle
-    const videoChannelLikeHideWords = this.fuse.search(videoChannel)
-    const videoTitleLikeHideWords = this.fuse.search(videoTitle)
-    const match = videoChannelLikeHideWords.length || videoTitleLikeHideWords.length
-    
-    this._updateBlurredElementsList(videoChannelLikeHideWords.map(fuseItem => fuseItem.item.word), videoMetaData.dom)
-    this._updateBlurredElementsList(videoTitleLikeHideWords.map(fuseItem => fuseItem.item.word), videoMetaData.dom)
-
-    return match
-  }
-
-  _blur() {
-    this.videoMetaDataList = getAllVideoMetaDataOnHomePage()
-    // filter videoMetaDataList if hide list contains words in videoChannel and videoTitle
-    const filteredVideoMetaDataList = this.videoMetaDataList.filter(this._filter, this)
-    console.log('filteredVideoMetaDataList', filteredVideoMetaDataList)
-    // apply blur class to dom elements in videoMetaDataList
-    filteredVideoMetaDataList.forEach(videoMetaData => {
-      const content = getContent(videoMetaData.dom)
-      this._injectInlineBlurStyle(content)
-    })
+    // find words in blurredElements that are not in hideList
+    const hideWords = this.hideList.map(hideWord => hideWord.word)
+    const removedHideWords = Object.keys(this.blurredElements).filter(hideWord => !hideWords.includes(hideWord))
+    // get list of nodes that no longer need to be blurred
+    const nodes = removedHideWords.reduce((nodes, hideWord) => nodes.concat(this.blurredElements[hideWord]), [])
+    // remove blur from node
+    nodes.forEach(node => node.classList.remove('sne-blur-layer'))
+    // remove hide word from node map (ex: {hideWord: [nodes...]} -> {})
+    removedHideWords.forEach(hideWord => delete this.blurredElements[hideWord])
   }
 }
 
-new YouTubeHomeBlurScript().handleBlur()
+const blurScript = new YouTubeHomeBlurScript()
+blurScript.updateDom(blurScript.getNodes())
