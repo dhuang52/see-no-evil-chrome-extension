@@ -30,46 +30,29 @@ export default class BlurScript {
   }
 
   /**
-   * Given a list of hide words and a DOM element that is blurred, update the blurredElements mappping so that
-   * for each hide word in hideWords, blurredElements[hideWord] = DOM element
-   * @param {*} hideWords list of hideWords
-   * @param {*} domElement element on DOM that has been blurred
+   * Update the blurred elements cache so that hide word maps to the given node
+   * @param {Array} hideWords list of hideWords
+   * @param {Node} blurredNode element on DOM that has been blurred
    */
-  _updateBlurredElementsList(hideWords, domElement) {
+  _updateBlurredElementsList(hideWords, blurredNode) {
     hideWords.forEach(hideWord => this.blurredElements[hideWord] ?
-      this.blurredElements[hideWord].push(domElement) : this.blurredElements[hideWord] = [domElement])
+      this.blurredElements[hideWord].push(blurredNode) : this.blurredElements[hideWord] = [blurredNode])
   }
 
   /**
-   * Unblur content. 
+   * Blur a node
+   * @param {Node} node 
    */
-  _cleanBlurredElements() {
-    console.log('Child class has no implementation for _cleanBlurredElements() yet')
-  }
-
-  /**
-   * Add class to content to apply blur css
-   * @param {*} content DOM element that needs to be blurred
-   */
-  _injectInlineBlurStyle(content) {
-    if (!content.className.includes(this.blurLayerClass)) {
-      // TODO: use https://developer.mozilla.org/en-US/docs/Web/API/DOMTokenList/add instead
-      content.className = `${content.className} ${this.blurLayerClass} `
+  _blurNode(node) {
+    if (!node.classList.contains(this.blurLayerClass)) {
+      node.classList.add(this.blurLayerClass)
     }
   }
 
-  getNodes() {
-    console.log('Child class has no implementation for getNodes() yet')
-  }
-
-  _parseNodes(nodes) {
-    console.log('Child class has no implementation for _parseNodes() yet')
-  }
-
-  _filterParsedNodes(parsedNodes) {
-    console.log('Child class has no implementation for _filterParsedNodes() yet')
-  }
-
+  /**
+   * Blur any nodes that contain words that are similar to the words in the hide list
+   * @param {Array} nodes 
+   */
   updateDom(nodes) {
     if (this.hideList) {
       this.fuse.setCollection(this.hideList)
@@ -84,7 +67,7 @@ export default class BlurScript {
   }
 
   /**
-   * Initialize listener storage API
+   * Initialize storage API event listener
    */
   initListener = () => {
     chrome.storage.onChanged.addListener((changes, namespace) => {
@@ -110,5 +93,35 @@ export default class BlurScript {
       }
       // if at this point, then user hasn't added any words to the hide list
     })
+  }
+
+  /**
+   * Get all nodes on at the content root
+   */
+  getNodes() {
+    console.log('Child class has no implementation for getNodes() yet')
+  }
+
+  /**
+   * Extract text data from the nodes
+   * @param {Array} nodes 
+   */
+  _parseNodes(nodes) {
+    console.log('Child class has no implementation for _parseNodes() yet')
+  }
+
+  /**
+   * Given a list of parsed nodes, return the nodes that match any of the hide words
+   * @param {Array} parsedNodes 
+   */
+  _filterParsedNodes(parsedNodes) {
+    console.log('Child class has no implementation for _filterParsedNodes() yet')
+  }
+
+  /**
+   * Remove the blur from any node that no longer needs to be blurred
+   */
+  _cleanBlurredElements() {
+    console.log('Child class has no implementation for _cleanBlurredElements() yet')
   }
 }

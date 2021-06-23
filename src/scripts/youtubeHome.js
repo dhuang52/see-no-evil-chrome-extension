@@ -1,4 +1,4 @@
-import { getAllVideoMetaDataOnPage, getContent, getAllVideosOnPage, getVideoTitle, getChannelName } from './utils/youtube'
+import { getAllVideosOnPage, getVideoTitle, getChannelName } from './utils/youtube'
 import { videoTagName } from '../constants/sortBy'
 import BlurScript from './utils/BlurScript'
 
@@ -14,11 +14,12 @@ class YouTubeHomeBlurScript extends BlurScript {
     this._initContentObserver()
   }
 
-  _initContentObserver() {
-    const contentRoot = document.querySelector('ytd-page-manager')
-
-    this.observer = new MutationObserver((mutations) => {
-      const relevantNodes = []
+  /**
+   * MutationObserver callback, checks if any new video nodes were added and blurs them if needed
+   * @param {Array} mutations 
+   */
+  _handleMutations(mutations) {
+    const relevantNodes = []
       mutations.forEach(mutationRecord => {
         if (mutationRecord.addedNodes) {
           mutationRecord.addedNodes.forEach(addedNode => {
@@ -33,7 +34,17 @@ class YouTubeHomeBlurScript extends BlurScript {
         console.log(relevantNodes)
         this.updateDom(relevantNodes)
       }
-    })
+  }
+
+  /**
+   * Initialize the page's mutation observer
+   */
+  _initContentObserver() {
+    const contentRoot = document.querySelector('ytd-page-manager')
+    // If `this` (YouTubeHomeBlurScript) is not explicitly binded to the callback, the
+    // `this` in the callback will reference the MutationObserver object (??)
+    const handleMutationsBindThis = this._handleMutations.bind(this)
+    this.observer = new MutationObserver(handleMutationsBindThis)
     const mutationObserverOptions = {
       childList: true,
       subtree: true,
@@ -67,7 +78,7 @@ class YouTubeHomeBlurScript extends BlurScript {
 
   _blurNodes(parsedNodes) {
     parsedNodes.forEach(parsedNode => {
-      this._injectInlineBlurStyle(parsedNode.node)
+      this._blurNode(parsedNode.node)
     })
   }
 
