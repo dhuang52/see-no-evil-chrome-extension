@@ -1,0 +1,100 @@
+import {isVideoNode,
+  isVideoMetaDataNode,
+  getAllVideoNodes,
+  getPageManager,
+  getChannelName,
+  getVideoTitle,
+  getVideoNodeParent} from './utils/youtube'
+import Fuse from 'fuse.js'
+import '../styles/blur.css'
+
+// TODO: add method to disconnect the mutation observer
+let hideWordList = []
+const HIDE_WORDS_LIST_STORAGE_KEY = 'hideWords'
+const BLUR_LAYER_CLASS = 'sne-blur-layer'
+
+// TODO: move to a util file
+const FUSE_THRESHOLD = .4
+const FUSE_OBJ_KEYS = ['word']
+const FUSE = new Fuse([], {
+  keys: FUSE_OBJ_KEYS,
+  ignoreLocation: true,
+  includeScore: true,
+  threshold: FUSE_THRESHOLD
+})
+
+chrome.storage.sync.get(HIDE_WORDS_LIST_STORAGE_KEY, (result) => {
+  if (chrome.runtime.lastError) {
+    // TODO: display error message to user
+    console.log('error while getting hide words', chrome.runtime.lastError)
+  } else if (result[HIDE_WORDS_LIST_STORAGE_KEY]) {
+    hideWordList = result[HIDE_WORDS_LIST_STORAGE_KEY]
+    console.log(hideWordList)
+    FUSE.setCollection(hideWordList)
+    
+    // Manually trigger an update to the DOM since the MutationObserver might not catch all events when the page first loads
+    const allVideoNodes = getAllVideoNodes()
+    updateDOM(allVideoNodes)
+  }
+})
+
+chrome.storage.onChanged.addListener((changes, namespace) => {
+  // Update local copy of hideWords if there was a new value
+  if (namespace === 'sync' && changes[HIDE_WORDS_LIST_STORAGE_KEY]?.newValue) {
+    hideWordList = changes[HIDE_WORDS_LIST_STORAGE_KEY].newValue
+    FUSE.setCollection(hideWordList)
+
+    // Manually trigger an update to the DOM since the MutationObserver does not catch storage API events
+    const allVideoNodes = getAllVideoNodes()
+    updateDOM(allVideoNodes)
+  }
+});
+
+const initializeMutationObserver = () => {
+  const mutationObserver = new MutationObserver(mutationObserverCallback)
+  const ytdPageManager = getPageManager()
+  const mutationObserverOptions = {
+    subtree: true,
+    childList: true
+  }
+  mutationObserver.observe(ytdPageManager, mutationObserverOptions)
+}
+
+const mutationObserverCallback = (mutationList) => {
+  // Find all added nodes that are videos
+  const relevantAddedNodes = mutationList.flatMap(mutationRecord => [...mutationRecord.addedNodes]).filter(isVideoNode)
+  // Find all video nodes that were updated (i.e. the video title changed)
+  const relevantUpdatedNodes = mutationList.filter(mutationRecord => isVideoMetaDataNode(mutationRecord.target))
+    .map(mutationRecord => getVideoNodeParent(mutationRecord.target))
+    .filter(node => node)
+
+  // Convert to set to remove duplicate nodes
+  const relevantNodesSet = new Set([...relevantUpdatedNodes, ...relevantAddedNodes])
+  const relevantUpdatedNodesSet = new Set(relevantUpdatedNodes)
+
+  updateDOM([...relevantNodesSet])
+  updateDOM([...relevantUpdatedNodesSet])
+}
+
+const updateDOM = (nodes) => {
+  nodes.forEach(node => nodeMetaDataSimilarToHideWord(node) ? blurNode(node) : unblurNode(node))
+}
+
+const nodeMetaDataSimilarToHideWord = (node) => {
+  const channelName = getChannelName(node)
+  const videoTitle = getVideoTitle(node)
+  const hideWordMatches = [...FUSE.search(channelName), ...FUSE.search(videoTitle)].map(fuseItem => fuseItem.item.word)
+  return hideWordMatches.length
+}
+
+const blurNode = (node) => {
+  if (!node.classList.contains(BLUR_LAYER_CLASS)) {
+    node.classList.add(BLUR_LAYER_CLASS)
+  }
+}
+
+const unblurNode = (node) => {
+  node.classList.remove(BLUR_LAYER_CLASS)
+}
+
+initializeMutationObserver()

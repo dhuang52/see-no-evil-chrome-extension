@@ -9,8 +9,7 @@ module.exports = env => {
     entry: {
       popup: './src/popup.js',
       background: './src/scripts/background.js',
-      youtubeHome: './src/scripts/youtubeHome.js',
-      youtubeWatch: './src/scripts/youtubeWatch.js',
+      youtube: './src/scripts/youtube.js',
     },
     output: {
       path: path.resolve(__dirname , 'dist'),
