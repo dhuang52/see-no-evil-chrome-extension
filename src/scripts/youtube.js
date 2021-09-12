@@ -11,15 +11,9 @@ import '../styles/blur.css'
 let hideWordList = []
 const HIDE_WORDS_LIST_STORAGE_KEY = 'hideWords'
 const BLUR_LAYER_CLASS = 'sne-blur-layer'
-
-// TODO: move to a util file
-const FUSE_THRESHOLD = .4
-const FUSE_OBJ_KEYS = ['word']
 const FUSE = new Fuse([], {
-  keys: FUSE_OBJ_KEYS,
-  ignoreLocation: true,
   includeScore: true,
-  threshold: FUSE_THRESHOLD
+  threshold: .3
 })
 
 chrome.storage.sync.get(HIDE_WORDS_LIST_STORAGE_KEY, (result) => {
@@ -28,8 +22,6 @@ chrome.storage.sync.get(HIDE_WORDS_LIST_STORAGE_KEY, (result) => {
     console.log('error while getting hide words', chrome.runtime.lastError)
   } else if (result[HIDE_WORDS_LIST_STORAGE_KEY]) {
     hideWordList = result[HIDE_WORDS_LIST_STORAGE_KEY]
-    FUSE.setCollection(hideWordList)
-    
     // Manually trigger an update to the DOM since the MutationObserver might not catch all events when the page first loads
     const allVideoNodes = getAllVideoNodes()
     updateDOM(allVideoNodes)
@@ -40,8 +32,6 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
   // Update local copy of hideWords if there was a new value
   if (namespace === 'sync' && changes[HIDE_WORDS_LIST_STORAGE_KEY]?.newValue) {
     hideWordList = changes[HIDE_WORDS_LIST_STORAGE_KEY].newValue
-    FUSE.setCollection(hideWordList)
-
     // Manually trigger an update to the DOM since the MutationObserver does not catch storage API events
     const allVideoNodes = getAllVideoNodes()
     updateDOM(allVideoNodes)
@@ -78,7 +68,8 @@ const updateDOM = (nodes) => {
 const nodeMetaDataSimilarToHideWord = (node) => {
   const channelName = getChannelName(node)
   const videoTitle = getVideoTitle(node)
-  const hideWordMatches = [...FUSE.search(channelName), ...FUSE.search(videoTitle)].map(fuseItem => fuseItem.item.word)
+  FUSE.setCollection([channelName, videoTitle])
+  const hideWordMatches = hideWordList.flatMap(hideWord => FUSE.search(hideWord.word))
   return hideWordMatches.length
 }
 
