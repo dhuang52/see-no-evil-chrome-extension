@@ -92,7 +92,7 @@ class App extends React.Component {
       this.setState({
         hideWords: newHideWords,
         displayHideWords: newDisplayHideWords
-      })
+      }, () => this.handleSortBy(this.state.sortBy))
     }
   }
 
