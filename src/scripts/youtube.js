@@ -8,7 +8,6 @@ import {isVideoNode,
 import Fuse from 'fuse.js'
 import '../styles/blur.css'
 
-// TODO: add method to disconnect the mutation observer
 let hideWordList = []
 const HIDE_WORDS_LIST_STORAGE_KEY = 'hideWords'
 const BLUR_LAYER_CLASS = 'sne-blur-layer'
@@ -29,7 +28,6 @@ chrome.storage.sync.get(HIDE_WORDS_LIST_STORAGE_KEY, (result) => {
     console.log('error while getting hide words', chrome.runtime.lastError)
   } else if (result[HIDE_WORDS_LIST_STORAGE_KEY]) {
     hideWordList = result[HIDE_WORDS_LIST_STORAGE_KEY]
-    console.log(hideWordList)
     FUSE.setCollection(hideWordList)
     
     // Manually trigger an update to the DOM since the MutationObserver might not catch all events when the page first loads
@@ -70,10 +68,7 @@ const mutationObserverCallback = (mutationList) => {
 
   // Convert to set to remove duplicate nodes
   const relevantNodesSet = new Set([...relevantUpdatedNodes, ...relevantAddedNodes])
-  const relevantUpdatedNodesSet = new Set(relevantUpdatedNodes)
-
   updateDOM([...relevantNodesSet])
-  updateDOM([...relevantUpdatedNodesSet])
 }
 
 const updateDOM = (nodes) => {
