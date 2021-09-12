@@ -1,7 +1,8 @@
 const VIDEO_NODE_TAG_NAMES = ['ytd-rich-item-renderer',
   'ytd-compact-video-renderer',
   'ytd-video-renderer',
-  'ytd-grid-video-renderer']
+  'ytd-grid-video-renderer'
+]
 
 export const getChannelName = (videoNode) => {
   return videoNode.querySelector('#channel-name #text-container')?.textContent.trim() || ''
