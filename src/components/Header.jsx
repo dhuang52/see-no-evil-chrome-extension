@@ -22,7 +22,7 @@ class Header extends React.Component {
         {/* HEADER */}
           <Row>
             <Col>
-              <h2>See No Evil</h2>
+              <h2>Blur</h2>
             </Col>
           </Row>
         {/* SORT BY */}

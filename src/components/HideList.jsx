@@ -17,7 +17,7 @@ class HideList extends React.Component {
   render() {
     return (
       <Row className='hideList'>
-        <Col span={20}>
+        <Col span={24}>
           {this.props.hideWords.map(hideWord => this.createItem(hideWord))}
         </Col>
       </Row>

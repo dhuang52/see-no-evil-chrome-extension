@@ -5,7 +5,10 @@ import { DeleteOutlined } from '@ant-design/icons'
 class HideListItem extends React.Component {
   constructor(props) {
     super(props)
-    this.state = {removed: false}
+    this.state = {
+      removed: false,
+      focus: false
+    }
   }
 
   onChange = (e) => {
@@ -19,7 +22,9 @@ class HideListItem extends React.Component {
   }
 
   getClassName = () => {
-    return this.state.removed ? 'hideListItem fadeOut' : 'hideListItem fadeIn'
+    const animationClassName = this.state.removed ? 'fadeOut' : 'fadeIn'
+    const focusClassName = this.state.focus ? 'focus' : ''
+    return `input hideListItem ${animationClassName} ${focusClassName}`
   }
 
   handleAnimationEnd = () => {
@@ -32,13 +37,14 @@ class HideListItem extends React.Component {
     const { word } = this.props
     return (
       <Row
-        align='middle'
+        onFocus={() => this.setState({focus: true})}
+        onBlur={() => this.setState({focus: false})}
         onAnimationEnd={this.handleAnimationEnd}
         className={this.getClassName()}>
-        <Col span={20}>
+        <Col flex='auto'>
           <input type='text' defaultValue={word} onChange={this.onChange} />
         </Col>
-        <Col span={4} push={1}>
+        <Col flex='10px'>
           <DeleteOutlined
             className='deleteIcon'
             onClick={this.removeItem} />

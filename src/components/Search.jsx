@@ -8,6 +8,7 @@ class Search extends React.Component {
   constructor(props) {
     super(props)
     this.fuse = new Fuse(this.props.hideWords, {})
+    this.state = {focus: false}
   }
 
   // constructor is called once on mount, maintain Fuse sarch bank after every update
@@ -31,10 +32,19 @@ class Search extends React.Component {
     }
   }
 
+  getClassName = () => {
+    const focusClassName = this.state.focus ? 'focus' : ''
+    return `input ${focusClassName}`
+  }
+
   render() {
     return (
     <Row>
-      <Col span={20}>
+      <Col
+        span={24}
+        className={this.getClassName()}
+        onFocus={() => this.setState({focus: true})}
+        onBlur={() => this.setState({focus: false})} >
         <input
           type='text'
           placeholder='Search or Add'
