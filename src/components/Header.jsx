@@ -17,36 +17,26 @@ class Header extends React.Component {
 
   render() {
     return (
-      <Row>
+      <Row align='middle'>
         <Col>
-        {/* HEADER */}
-          <Row>
-            <Col>
-              <h2>Blur</h2>
-            </Col>
-          </Row>
-        {/* SORT BY */}
-          <Row>
-            <Col>
-              <Space>
-                <Button size='small' shape='round'
-                  type={this.getButtonType(sortBy.ABC)}
-                  onClick={() => this.handleSortBy(sortBy.ABC)}>
-                    {sortBy.ABC}
-                </Button>
-                <Button size='small' shape='round'
-                  type={this.getButtonType(sortBy.NEW)}
-                  onClick={() => this.handleSortBy(sortBy.NEW)}>
-                    {sortBy.NEW}
-                  </Button>
-                <Button size='small' shape='round'
-                  type={this.getButtonType(sortBy.OLD)}
-                  onClick={() => this.handleSortBy(sortBy.OLD)}>
-                    {sortBy.OLD}
-                  </Button>
-              </Space>
-            </Col>
-          </Row>
+          <Space>
+            <h1>Blur</h1>
+            <Button size='small' shape='round'
+              type={this.getButtonType(sortBy.ABC)}
+              onClick={() => this.handleSortBy(sortBy.ABC)}>
+                {sortBy.ABC}
+            </Button>
+            <Button size='small' shape='round'
+              type={this.getButtonType(sortBy.NEW)}
+              onClick={() => this.handleSortBy(sortBy.NEW)}>
+                {sortBy.NEW}
+              </Button>
+            <Button size='small' shape='round'
+              type={this.getButtonType(sortBy.OLD)}
+              onClick={() => this.handleSortBy(sortBy.OLD)}>
+                {sortBy.OLD}
+              </Button>
+          </Space>
         </Col>
       </Row>
     )
