@@ -23,17 +23,26 @@ h1 {
 input {
   width: 100%;
   outline: none;
-  border-width: 0;
-}
-
-.input {
-  border-bottom: 1px solid #d9d9d9;
-  border-color: #d9d9d9;
   transition: border-color 0.2s linear;
 }
 
-.input.focus {
-  border-color: #1890ff;
+.searchBar input {
+  border-width: 0;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+.input input {
+  border-radius: 5px;
+  padding: 3px 8px;
+  border: .5px solid #d9d9d9;
+}
+
+.focus input {
+  border-color: #1890ff !important;
+}
+
+.input input:hover {
+  border-color: #1890ff !important;
 }
 
 .hideListItem {
@@ -47,6 +56,10 @@ input {
 
 .fadeIn {
   animation: fadeIn .3s linear;
+}
+
+.deleteIconContainer {
+  text-align: right;
 }
 
 .deleteIcon {

@@ -37,14 +37,15 @@ class HideListItem extends React.Component {
     const { word } = this.props
     return (
       <Row
+        align='middle'
         onFocus={() => this.setState({focus: true})}
         onBlur={() => this.setState({focus: false})}
         onAnimationEnd={this.handleAnimationEnd}
         className={this.getClassName()}>
-        <Col flex='auto'>
+        <Col span={22}>
           <input type='text' defaultValue={word} onChange={this.onChange} />
         </Col>
-        <Col flex='10px'>
+        <Col span={2} className='deleteIconContainer'>
           <DeleteOutlined
             className='deleteIcon'
             onClick={this.removeItem} />

@@ -34,7 +34,7 @@ class Search extends React.Component {
 
   getClassName = () => {
     const focusClassName = this.state.focus ? 'focus' : ''
-    return `input ${focusClassName}`
+    return `searchBar ${focusClassName}`
   }
 
   render() {
