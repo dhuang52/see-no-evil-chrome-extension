@@ -47,7 +47,7 @@ class Search extends React.Component {
         onBlur={() => this.setState({focus: false})} >
         <input
           type='text'
-          placeholder='Search or Add'
+          placeholder='search or add'
           onChange={this.onChange}
           onKeyPress={this.onKeyPress} />
       </Col>

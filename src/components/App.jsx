@@ -150,14 +150,16 @@ class App extends React.Component {
           <Header
             sortBy={this.state.sortBy}
             handleSortBy={this.handleSortBy} />
-          <Search
-            hideWords={this.state.hideWords.map(hideWord => hideWord.word)}
-            addHideWord={this.addHideWord}
-            handleSearch={this.handleSearch} />
-          <HideList
-            hideWords={this.state.isSearching ? this.state.displayHideWords : this.state.hideWords}
-            deleteHideWord={this.deleteHideWord}
-            editHideWord={this.editHideWord} />
+          <div className='bodyContainer'>
+            <Search
+              hideWords={this.state.hideWords.map(hideWord => hideWord.word)}
+              addHideWord={this.addHideWord}
+              handleSearch={this.handleSearch} />
+            <HideList
+              hideWords={this.state.isSearching ? this.state.displayHideWords : this.state.hideWords}
+              deleteHideWord={this.deleteHideWord}
+              editHideWord={this.editHideWord} />
+          </div>
         </Space>
       </Col>
     </Row>

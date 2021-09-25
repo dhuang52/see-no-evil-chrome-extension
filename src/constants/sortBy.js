@@ -1,5 +1,5 @@
 export const sortBy = {
-  OLD: 'Old',
-  NEW: 'New',
-  ABC: 'Abc',
+  OLD: 'old',
+  NEW: 'new',
+  ABC: 'abc',
 }

@@ -17,10 +17,10 @@ class Header extends React.Component {
 
   render() {
     return (
-      <Row align='middle'>
+      <Row className='headerContainer' align='middle'>
         <Col>
           <Space>
-            <h1>Blur</h1>
+            <h1>blur</h1>
             <Button size='small' shape='round'
               type={this.getButtonType(sortBy.ABC)}
               onClick={() => this.handleSortBy(sortBy.ABC)}>

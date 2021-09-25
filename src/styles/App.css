@@ -1,7 +1,6 @@
 #see-no-evil-popup {
   width: 325px;
   height: 500px;
-  padding: 10px 20px;
   overflow: auto;
   overflow-x: hidden;
 }
@@ -17,13 +16,25 @@
 }
 
 h1 {
+  color: white !important;
   margin: 0 !important;
 }
 
 input {
   width: 100%;
   outline: none;
+  background-color: transparent;
   transition: border-color 0.2s linear;
+}
+
+.headerContainer {
+  background-color: #2f2f2f;
+  padding: 5px 20px;
+  border-radius: 0px 0px 5px 5px;
+}
+
+.bodyContainer {
+  padding: 5px 20px;
 }
 
 .searchBar input {
