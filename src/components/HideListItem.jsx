@@ -1,58 +1,72 @@
-import React from 'react'
-import { Row, Col } from 'antd'
-import { DeleteOutlined } from '@ant-design/icons'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Row, Col } from 'antd';
+import { DeleteOutlined } from '@ant-design/icons';
 
 class HideListItem extends React.Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
       removed: false,
-      focus: false
-    }
+      focus: false,
+    };
   }
 
   onChange = (e) => {
-    const newValue = e.target.value
-    const originalValue = this.props.word
-    this.props.editItem(this.props.id, newValue)
+    const { editItem, id } = this.props;
+    const newValue = e.target.value;
+    // const originalValue = this.props.word;
+    editItem(id, newValue);
   }
 
   removeItem = () => {
-    this.setState({removed: true})
+    this.setState({ removed: true });
   }
 
   getClassName = () => {
-    const animationClassName = this.state.removed ? 'fadeOut' : 'fadeIn'
-    const focusClassName = this.state.focus ? 'focus' : ''
-    return `input hideListItem ${animationClassName} ${focusClassName}`
+    const { removed, focus } = this.state;
+    const animationClassName = removed ? 'fadeOut' : 'fadeIn';
+    const focusClassName = focus ? 'focus' : '';
+    return `input hideListItem ${animationClassName} ${focusClassName}`;
   }
 
   handleAnimationEnd = () => {
-    if (this.state.removed) {
-      this.props.deleteItem(this.props.word)
+    const { removed } = this.state;
+    const { deleteItem, word } = this.props;
+    if (removed) {
+      deleteItem(word);
     }
   }
 
   render() {
-    const { word } = this.props
+    const { word } = this.props;
     return (
       <Row
         align='middle'
-        onFocus={() => this.setState({focus: true})}
-        onBlur={() => this.setState({focus: false})}
+        onFocus={() => this.setState({ focus: true })}
+        onBlur={() => this.setState({ focus: false })}
         onAnimationEnd={this.handleAnimationEnd}
-        className={this.getClassName()}>
+        className={this.getClassName()}
+      >
         <Col span={22}>
           <input type='text' defaultValue={word} onChange={this.onChange} />
         </Col>
         <Col span={2} className='deleteIconContainer'>
           <DeleteOutlined
             className='deleteIcon'
-            onClick={this.removeItem} />
+            onClick={this.removeItem}
+          />
         </Col>
       </Row>
-    )
+    );
   }
 }
 
-export default HideListItem
+HideListItem.propTypes = {
+  word: PropTypes.string.isRequired,
+  id: PropTypes.string.isRequired,
+  deleteItem: PropTypes.func.isRequired,
+  editItem: PropTypes.func.isRequired,
+};
+
+export default HideListItem;

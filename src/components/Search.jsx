@@ -1,59 +1,73 @@
-import React from 'react'
-import { Row, Col } from 'antd'
-import Fuse from 'fuse.js'
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Row, Col } from 'antd';
+import Fuse from 'fuse.js';
 
-const enterKeycode = 13
+const enterKeycode = 13;
 
 class Search extends React.Component {
   constructor(props) {
-    super(props)
-    this.fuse = new Fuse(this.props.hideWords, {})
-    this.state = {focus: false}
+    super(props);
+    const { hideWords } = this.props;
+    this.fuse = new Fuse(hideWords, {});
+    this.state = { focus: false };
   }
 
   // constructor is called once on mount, maintain Fuse sarch bank after every update
   componentDidUpdate() {
-    this.fuse.setCollection(this.props.hideWords)
+    const { hideWords } = this.props;
+    this.fuse.setCollection(hideWords);
   }
 
   onChange = (e) => {
-    const value = e.target.value
+    const { value } = e.target;
+    const { handleSearch } = this.props;
     if (value) {
-      const searchResults = this.fuse.search(value)
-      this.props.handleSearch(searchResults, true)
+      const searchResults = this.fuse.search(value);
+      handleSearch(searchResults, true);
     } else {
-      this.props.handleSearch([], false)
+      handleSearch([], false);
     }
   }
 
   onKeyPress = (e) => {
+    const { addHideWord } = this.props;
     if (e.charCode === enterKeycode) {
-      this.props.addHideWord(e.target.value)
+      addHideWord(e.target.value);
     }
   }
 
   getClassName = () => {
-    const focusClassName = this.state.focus ? 'focus' : ''
-    return `searchBar ${focusClassName}`
+    const { focus } = this.state;
+    const focusClassName = focus ? 'focus' : '';
+    return `searchBar ${focusClassName}`;
   }
 
   render() {
     return (
-    <Row>
-      <Col
-        span={24}
-        className={this.getClassName()}
-        onFocus={() => this.setState({focus: true})}
-        onBlur={() => this.setState({focus: false})} >
-        <input
-          type='text'
-          placeholder='search or add'
-          onChange={this.onChange}
-          onKeyPress={this.onKeyPress} />
-      </Col>
-    </Row>
-    )
+      <Row>
+        <Col
+          span={24}
+          className={this.getClassName()}
+          onFocus={() => this.setState({ focus: true })}
+          onBlur={() => this.setState({ focus: false })}
+        >
+          <input
+            type='text'
+            placeholder='search or add'
+            onChange={this.onChange}
+            onKeyPress={this.onKeyPress}
+          />
+        </Col>
+      </Row>
+    );
   }
 }
 
-export default Search
+Search.propTypes = {
+  hideWords: PropTypes.arrayOf(PropTypes.string).isRequired,
+  handleSearch: PropTypes.func.isRequired,
+  addHideWord: PropTypes.func.isRequired,
+};
+
+export default Search;

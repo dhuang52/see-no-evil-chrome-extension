@@ -1,48 +1,39 @@
 const VIDEO_NODE_TAG_NAMES = ['ytd-rich-item-renderer',
   'ytd-compact-video-renderer',
   'ytd-video-renderer',
-  'ytd-grid-video-renderer'
-]
+  'ytd-grid-video-renderer',
+];
 
-export const getChannelName = (videoNode) => {
-  return videoNode.querySelector('#channel-name #text-container')?.textContent.trim() || ''
-}
+export const getChannelName = (videoNode) => videoNode.querySelector('#channel-name #text-container')?.textContent.trim() || '';
 
-export const getVideoTitle = (videoNode) => {
-  return videoNode.querySelector('#video-title')?.textContent.trim() || ''
-}
+export const getVideoTitle = (videoNode) => videoNode.querySelector('#video-title')?.textContent.trim() || '';
 
-export const getPageManager = () => {
-  return document.querySelector('ytd-page-manager#page-manager')
-}
+export const getPageManager = () => document.querySelector('ytd-page-manager#page-manager');
 
-export const isAdRenderer = (node) => {
-  return node.querySelector('ytd-display-ad-renderer')
-}
+export const isAdRenderer = (node) => node.querySelector('ytd-display-ad-renderer');
 
-export const isVideoNode = (node) => {
-  return node.tagName && VIDEO_NODE_TAG_NAMES.includes(node.tagName.toLowerCase()) && !isAdRenderer(node)
-}
+export const isVideoNode = (node) => node.tagName
+  && VIDEO_NODE_TAG_NAMES.includes(node.tagName.toLowerCase())
+  && !isAdRenderer(node);
 
-export const isVideoMetaDataNode = (node) => {
-  return node.id === 'video-title' || node.id === 'channel-name'
-}
+export const isVideoMetaDataNode = (node) => node.id === 'video-title' || node.id === 'channel-name';
 
 export const getVideoNodeParent = (childNode) => {
-  let videoNode = null
-  for (let tagName of VIDEO_NODE_TAG_NAMES) {
-    videoNode = childNode.closest(tagName)
+  let videoNode = null;
+  for (let i = 0; i < VIDEO_NODE_TAG_NAMES.length; i += 1) {
+    const tagName = VIDEO_NODE_TAG_NAMES[i];
+    videoNode = childNode.closest(tagName);
     if (videoNode) {
-      break
+      break;
     }
   }
-  return videoNode
-}
+  return videoNode;
+};
 
 export const getAllVideoNodes = () => {
-  let nodes = []
-  VIDEO_NODE_TAG_NAMES.forEach(tagName => {
-    nodes = nodes.concat([...document.querySelectorAll(tagName)])
-  })
-  return nodes
-}
+  let nodes = [];
+  VIDEO_NODE_TAG_NAMES.forEach((tagName) => {
+    nodes = nodes.concat([...document.querySelectorAll(tagName)]);
+  });
+  return nodes;
+};
