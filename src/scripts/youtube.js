@@ -1,13 +1,5 @@
 import Fuse from 'fuse.js';
-import {
-  isVideoNode,
-  isVideoMetaDataNode,
-  getAllVideoNodes,
-  getPageManager,
-  getChannelName,
-  getVideoTitle,
-  getVideoNodeParent,
-} from './utils/youtube';
+import youtubeDOMUtils from './utils/youtube';
 import '../styles/blur.css';
 
 let hideWordList = [];
@@ -19,8 +11,8 @@ const FUSE = new Fuse([], {
 });
 
 const nodeMetaDataSimilarToHideWord = (node) => {
-  const channelName = getChannelName(node);
-  const videoTitle = getVideoTitle(node);
+  const channelName = youtubeDOMUtils.getChannelName(node);
+  const videoTitle = youtubeDOMUtils.getVideoTitle(node);
   FUSE.setCollection([channelName, videoTitle]);
   const hideWordMatches = hideWordList.flatMap((hideWord) => FUSE.search(hideWord.word));
   return hideWordMatches.length;
@@ -45,11 +37,11 @@ const mutationObserverCallback = (mutationList) => {
   // Find all added nodes that are videos
   const relevantAddedNodes = mutationList
     .flatMap((mutationRecord) => [...mutationRecord.addedNodes])
-    .filter(isVideoNode);
+    .filter(youtubeDOMUtils.isVideoNode);
   // Find all video nodes that were updated (i.e. the video title changed)
   const relevantUpdatedNodes = mutationList
-    .filter((mutationRecord) => isVideoMetaDataNode(mutationRecord.target))
-    .map((mutationRecord) => getVideoNodeParent(mutationRecord.target))
+    .filter((mutationRecord) => youtubeDOMUtils.isVideoMetaDataNode(mutationRecord.target))
+    .map((mutationRecord) => youtubeDOMUtils.getVideoNodeParent(mutationRecord.target))
     .filter((node) => node);
 
   // Convert to set to remove duplicate nodes
@@ -65,7 +57,7 @@ chrome.storage.sync.get(HIDE_WORDS_LIST_STORAGE_KEY, (result) => {
     hideWordList = result[HIDE_WORDS_LIST_STORAGE_KEY];
     // Manually trigger an update to the DOM since the MutationObserver might not catch all events
     // when the page first loads
-    const allVideoNodes = getAllVideoNodes();
+    const allVideoNodes = youtubeDOMUtils.getAllVideoNodes();
     updateDOM(allVideoNodes);
   }
 });
@@ -76,14 +68,14 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     hideWordList = changes[HIDE_WORDS_LIST_STORAGE_KEY].newValue;
     // Manually trigger an update to the DOM since the MutationObserver does not catch storage
     // API events
-    const allVideoNodes = getAllVideoNodes();
+    const allVideoNodes = youtubeDOMUtils.getAllVideoNodes();
     updateDOM(allVideoNodes);
   }
 });
 
 const initializeMutationObserver = () => {
   const mutationObserver = new MutationObserver(mutationObserverCallback);
-  const ytdPageManager = getPageManager();
+  const ytdPageManager = youtubeDOMUtils.getPageManager();
   const mutationObserverOptions = {
     subtree: true,
     childList: true,
