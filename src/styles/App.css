@@ -33,6 +33,10 @@ input {
   border-radius: 0px 0px 5px 5px;
 }
 
+.sortyByButtons {
+  float: right;
+}
+
 .bodyContainer {
   padding: 5px 20px;
 }

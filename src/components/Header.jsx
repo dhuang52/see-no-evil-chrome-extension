@@ -18,9 +18,11 @@ class Header extends React.Component {
   render() {
     return (
       <Row className='headerContainer' align='middle'>
-        <Col>
+        <Col flex='auto'>
+          <h1>blur</h1>
+        </Col>
+        <Col flex='none' className='sortyByButtons'>
           <Space>
-            <h1>blur</h1>
             <Button size='small' shape='round'
               type={this.getButtonType(sortBy.ABC)}
               onClick={() => this.handleSortBy(sortBy.ABC)}>
