@@ -30,7 +30,7 @@ class HideList extends React.Component {
 }
 
 HideList.propTypes = {
-  hideWords: PropTypes.arrayOf(PropTypes.string).isRequired,
+  hideWords: PropTypes.arrayOf(PropTypes.object).isRequired,
   deleteHideWord: PropTypes.func.isRequired,
   editHideWord: PropTypes.func.isRequired,
 };
