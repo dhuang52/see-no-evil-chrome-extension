@@ -27,15 +27,11 @@ class Header extends React.Component {
         </Col>
         <Col flex='none' className='sortyByButtons'>
           <Space>
-            <Button size='small' shape='round' type={this.getButtonType(sortBy.ABC)} onClick={() => this.handleSortBy(sortBy.ABC)}>
-              {sortBy.ABC}
-            </Button>
-            <Button size='small' shape='round' type={this.getButtonType(sortBy.NEW)} onClick={() => this.handleSortBy(sortBy.NEW)}>
-              {sortBy.NEW}
-            </Button>
-            <Button size='small' shape='round' type={this.getButtonType(sortBy.OLD)} onClick={() => this.handleSortBy(sortBy.OLD)}>
-              {sortBy.OLD}
-            </Button>
+            {Object.values(sortBy).map((sortByType) => (
+              <Button key={sortByType} size='small' shape='round' type={this.getButtonType(sortByType)} onClick={() => this.handleSortBy(sortByType)}>
+                {sortByType}
+              </Button>
+            ))}
           </Space>
         </Col>
       </Row>
