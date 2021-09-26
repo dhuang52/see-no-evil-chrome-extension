@@ -64,7 +64,7 @@ class HideListItem extends React.Component {
 
 HideListItem.propTypes = {
   word: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
   deleteItem: PropTypes.func.isRequired,
   editItem: PropTypes.func.isRequired,
 };
