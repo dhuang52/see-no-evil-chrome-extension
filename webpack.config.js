@@ -8,7 +8,6 @@ module.exports = (env) => {
     mode,
     entry: {
       popup: './src/popup.jsx',
-      background: './src/scripts/background.js',
       youtube: './src/scripts/youtube.js',
     },
     output: {

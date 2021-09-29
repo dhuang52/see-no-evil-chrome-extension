@@ -6,9 +6,17 @@
   "action": {
     "default_popup": "popup.html"
   },
-  "background": {
-    "service_worker": "background.bundle.js"
-  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.youtube.com/",
+        "*://*.youtube.com/watch?*",
+        "*://*.youtube.com/results?*",
+        "*://*.youtube.com/c*"
+      ],
+      "js": ["youtube.bundle.js"]
+    }
+  ],
   "version": "1.0",
   "manifest_version": 3
 }
