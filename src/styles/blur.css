@@ -1,9 +1,20 @@
 .sne-blur-layer {
-  filter: blur(3px);
-  transition: filter .1s ease-out;
+  overflow: hidden !important;
+  border-radius: 5px;
+  transition: border-radius .1s ease-in;
 }
 
 .sne-blur-layer:hover {
+  border-radius: 0px;
+  transition: border-radius 1.5s ease-out;
+}
+
+.sne-blur-layer #content, .sne-blur-layer #dismissible {
+  filter: blur(16px);
+  transition: filter .1s ease-out;
+}
+
+.sne-blur-layer #content:hover, .sne-blur-layer #dismissible:hover {
   filter: blur(0px);
-  transition: filter 1.5s ease-out;
+  transition: filter 1.5s ease-in;
 }
