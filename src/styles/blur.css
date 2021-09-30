@@ -6,7 +6,7 @@
 
 .sne-blur-layer:hover {
   border-radius: 0px;
-  transition: border-radius 1.5s ease-out;
+  transition: border-radius 1s ease-out;
 }
 
 .sne-blur-layer #content, .sne-blur-layer #dismissible {
@@ -16,5 +16,5 @@
 
 .sne-blur-layer #content:hover, .sne-blur-layer #dismissible:hover {
   filter: blur(0px);
-  transition: filter 1.5s ease-in;
+  transition: filter 1s ease-in;
 }
