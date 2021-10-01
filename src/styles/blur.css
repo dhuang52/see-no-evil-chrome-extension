@@ -1,17 +1,21 @@
+ytd-rich-item-renderer, ytd-compact-video-renderer {
+  transition: filter .1s linear;
+}
+
 .sne-blur-layer {
   overflow: hidden !important;
   border-radius: 5px;
-  transition: border-radius .1s ease-in;
+  transition: border-radius .1s linear;
 }
 
 .sne-blur-layer:hover {
   border-radius: 0px;
-  transition: border-radius 1s ease-out;
+  transition: border-radius 1s ease-in;
 }
 
 .sne-blur-layer #content, .sne-blur-layer #dismissible {
   filter: blur(16px);
-  transition: filter .1s ease-out;
+  transition: filter .1s linear;
 }
 
 .sne-blur-layer #content:hover, .sne-blur-layer #dismissible:hover {
