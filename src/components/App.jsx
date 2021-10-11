@@ -46,10 +46,7 @@ class App extends React.Component {
         words = result[wordsStorageKey];
       }
       // React does not properly rerender when calling setState in callback
-      this.setState({
-        words,
-        isLoading: false,
-      });
+      this.setState({ words, isLoading: false });
     });
   }
 
@@ -61,6 +58,7 @@ class App extends React.Component {
         console.log('error while updating storage');
       } else {
         console.log('successfully updated storage', newWords);
+        this.setState({ words: newWords });
       }
     });
   }
@@ -78,8 +76,8 @@ class App extends React.Component {
       return;
     }
     const { words, sortBySelected } = this.state;
-    // only add if word does not exist in list
     const i = words.findIndex((word) => word.word === addWord);
+    // only add if word does not exist in list
     if (i < 0) {
       const dateNow = Date.now();
       const newWord = {
@@ -113,22 +111,24 @@ class App extends React.Component {
     });
     this.syncStorageAndState(words);
     // should setState in syncStorageAndState but it messes up the fadeOut animation
-    this.setState({ words });
+    // this.setState({ words });
+  }
+
+  sortWords = () => {
+    let { words } = this.state;
+    const { sortBySelected } = this.state;
+    if (sortBySelected === sortBy.ABC) {
+      words = words.slice().sort((a, b) => (a.word > b.word ? 1 : -1));
+    } else if (sortBySelected === sortBy.NEW) {
+      words = words.slice().sort((a, b) => (b.lastModified > a.lastModified ? 1 : -1));
+    } else if (sortBySelected === sortBy.OLD) {
+      words = words.slice().sort((a, b) => (a.lastModified > b.lastModified ? 1 : -1));
+    }
+    return words;
   }
 
   handleSortBy = (newSortBy) => {
-    let { words } = this.state;
-    if (newSortBy === sortBy.ABC) {
-      words = words.slice().sort((a, b) => (a.word > b.word ? 1 : -1));
-    } else if (newSortBy === sortBy.NEW) {
-      words = words.slice().sort((a, b) => (b.lastModified > a.lastModified ? 1 : -1));
-    } else if (newSortBy === sortBy.OLD) {
-      words = words.slice().sort((a, b) => (a.lastModified > b.lastModified ? 1 : -1));
-    }
-    this.setState({
-      words,
-      sortBySelected: newSortBy,
-    });
+    this.setState({ sortBySelected: newSortBy });
   }
 
   handleSearch = (search) => {
@@ -136,13 +136,14 @@ class App extends React.Component {
   }
 
   getSearchResults = () => {
-    const { words, search } = this.state;
+    const { search } = this.state;
+    const displayWords = this.sortWords();
     if (!search) {
-      return words;
+      return displayWords;
     }
-    this.fuse.setCollection(words);
+    this.fuse.setCollection(displayWords);
     const searchResults = this.fuse.search(search)
-      .map((result) => words[result.refIndex]);
+      .map((result) => displayWords[result.refIndex]);
     return searchResults;
   }
 
