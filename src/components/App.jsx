@@ -1,15 +1,16 @@
 import React from 'react';
 import { Row, Col, Space } from 'antd';
+import Fuse from 'fuse.js';
 import Header from './Header';
 import Search from './Search';
-import HideList from './HideList';
+import HideList from './List';
 import Loading from './Loading';
 import sortBy from '../constants/sortBy';
 import '../styles/App.css';
 import 'antd/dist/antd.css';
 
-const hideWordsStorageKey = 'hideWords';
-const defaultHideWord = {
+const wordsStorageKey = 'hideWords';
+const defaultWord = {
   word: 'add some words in the search bar',
   lastModified: Date.now(),
   id: Date.now(),
@@ -18,141 +19,135 @@ const defaultHideWord = {
 class App extends React.Component {
   constructor(props) {
     super(props);
+    this.fuse = new Fuse([], { keys: ['word'] });
     this.state = {
+      // true if retrieving words from chrome storage
       isLoading: true,
-      hideWords: [],
+      // list of objects that describe: a word, an id, when the word was last modified
+      words: [],
+      // how words should be sorted
       sortBySelected: sortBy.NEW,
-      displayHideWords: [],
-      isSearching: false,
+      // the user's search
+      search: '',
     };
   }
 
   componentDidMount() {
-    this.getHideWordsFromSyncStorage();
+    this.getWordsFromSyncStorage();
   }
 
-  getHideWordsFromSyncStorage = () => {
-    chrome.storage.sync.get(hideWordsStorageKey, (result) => {
-      let hideWords = [defaultHideWord];
+  getWordsFromSyncStorage = () => {
+    chrome.storage.sync.get(wordsStorageKey, (result) => {
+      let words = [defaultWord];
       if (chrome.runtime.lastError) {
         // TODO: display error message to user
         console.log('error while getting hide words');
-      } else if (result[hideWordsStorageKey]) {
-        hideWords = result[hideWordsStorageKey];
+      } else if (result[wordsStorageKey]) {
+        words = result[wordsStorageKey];
       }
       // React does not properly rerender when calling setState in callback
       this.setState({
-        hideWords,
+        words,
         isLoading: false,
       });
     });
   }
 
-  syncStorageAndState = (newHideWordsList) => {
+  syncStorageAndState = (newWords) => {
     const storageKvp = {};
-    storageKvp[hideWordsStorageKey] = newHideWordsList;
+    storageKvp[wordsStorageKey] = newWords;
     chrome.storage.sync.set(storageKvp, () => {
       if (chrome.runtime.lastError) {
-        console.log('error while setting hide words');
+        console.log('error while updating storage');
       } else {
-        console.log('successfully set hide words list', newHideWordsList);
-        // this.setState({hideWords: newHideWordsList})
+        console.log('successfully updated storage', newWords);
       }
     });
   }
 
-  deleteHideWord = (removeWord) => {
-    let { hideWords, displayHideWords } = this.state;
-    hideWords = hideWords.filter((hideWord) => hideWord.word !== removeWord);
-    displayHideWords = displayHideWords.filter((hideWord) => hideWord.word !== removeWord);
-    this.syncStorageAndState(hideWords);
+  deleteWord = (removeWord) => {
+    let { words } = this.state;
+    words = words.filter((word) => word.word !== removeWord);
+    this.syncStorageAndState(words);
     // should setState in syncStorageAndState but it messes up the fadeOut animation
-    this.setState({ hideWords, displayHideWords });
+    this.setState({ words });
   }
 
-  addHideWord = (addWord) => {
+  addWord = (addWord) => {
     if (!addWord) {
       return;
     }
-    const { hideWords, displayHideWords, sortBySelected } = this.state;
+    const { words, sortBySelected } = this.state;
     // only add if word does not exist in list
-    const i = hideWords.findIndex((hideWord) => hideWord.word === addWord);
+    const i = words.findIndex((word) => word.word === addWord);
     if (i < 0) {
       const dateNow = Date.now();
-      const newHideWord = {
+      const newWord = {
         word: addWord,
         lastModified: dateNow,
         id: dateNow,
       };
-      const newHideWords = [newHideWord, ...hideWords];
-      const newDisplayHideWords = [newHideWord, ...displayHideWords];
-      this.syncStorageAndState(newHideWords);
+      words.push(newWord);
+      this.syncStorageAndState(words);
       // should setState in syncStorageAndState but it messes up the fadeOut animation
       this.setState({
-        hideWords: newHideWords,
-        displayHideWords: newDisplayHideWords,
+        words,
       }, () => this.handleSortBy(sortBySelected));
     }
   }
 
-  editHideWord = (hideWordId, newWord) => {
+  editWord = (wordId, newWord) => {
     if (!newWord) {
       return;
     }
-    let { hideWords } = this.state;
-    hideWords = hideWords.map((hideWord) => {
-      if (hideWord.id === hideWordId) {
+    let { words } = this.state;
+    words = words.map((word) => {
+      if (word.id === wordId) {
         return {
           word: newWord,
           lastModified: Date.now(),
-          id: hideWord.id,
+          id: word.id,
         };
       }
-      return hideWord;
+      return word;
     });
-    this.syncStorageAndState(hideWords);
+    this.syncStorageAndState(words);
     // should setState in syncStorageAndState but it messes up the fadeOut animation
-    this.setState({ hideWords });
+    this.setState({ words });
   }
 
   handleSortBy = (newSortBy) => {
-    let { hideWords, displayHideWords } = this.state;
-    const sortyByAlpha = (a, b) => (a.word > b.word ? 1 : -1);
-    const sortByNew = (a, b) => (b.lastModified > a.lastModified ? 1 : -1);
-    const sortByOld = (a, b) => (a.lastModified > b.lastModified ? 1 : -1);
+    let { words } = this.state;
     if (newSortBy === sortBy.ABC) {
-      hideWords = hideWords.slice().sort(sortyByAlpha);
-      displayHideWords = displayHideWords.slice().sort(sortyByAlpha);
+      words = words.slice().sort((a, b) => (a.word > b.word ? 1 : -1));
     } else if (newSortBy === sortBy.NEW) {
-      hideWords = hideWords.slice().sort(sortByNew);
-      displayHideWords = displayHideWords.slice().sort(sortByNew);
+      words = words.slice().sort((a, b) => (b.lastModified > a.lastModified ? 1 : -1));
     } else if (newSortBy === sortBy.OLD) {
-      hideWords = hideWords.slice().sort(sortByOld);
-      displayHideWords = displayHideWords.slice().sort(sortByOld);
+      words = words.slice().sort((a, b) => (a.lastModified > b.lastModified ? 1 : -1));
     }
     this.setState({
-      hideWords,
-      displayHideWords,
+      words,
       sortBySelected: newSortBy,
     });
   }
 
-  handleSearch = (searchResults, isSearching) => {
-    const { hideWords } = this.state;
-    const displayHideWords = searchResults.map((result) => hideWords[result.refIndex]);
-    this.setState({
-      displayHideWords,
-      isSearching,
-    });
+  handleSearch = (search) => {
+    this.setState({ search });
+  }
+
+  getSearchResults = () => {
+    const { words, search } = this.state;
+    if (!search) {
+      return words;
+    }
+    this.fuse.setCollection(words);
+    const searchResults = this.fuse.search(search)
+      .map((result) => words[result.refIndex]);
+    return searchResults;
   }
 
   renderApp = () => {
-    const {
-      sortBySelected,
-      isSearching,
-      hideWords,
-      displayHideWords,
-    } = this.state;
+    const { sortBySelected } = this.state;
     return (
       <Row id='popup-app'>
         <Col span={24}>
@@ -163,14 +158,13 @@ class App extends React.Component {
             />
             <div className='bodyContainer'>
               <Search
-                hideWords={hideWords.map((hideWord) => hideWord.word)}
-                addHideWord={this.addHideWord}
+                addWord={this.addWord}
                 handleSearch={this.handleSearch}
               />
               <HideList
-                hideWords={isSearching ? displayHideWords : hideWords}
-                deleteHideWord={this.deleteHideWord}
-                editHideWord={this.editHideWord}
+                words={this.getSearchResults()}
+                deleteWord={this.deleteWord}
+                editWord={this.editWord}
               />
             </div>
           </Space>
