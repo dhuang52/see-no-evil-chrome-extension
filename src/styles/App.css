@@ -65,6 +65,10 @@ input {
   margin-bottom: 5px;
 }
 
+.hideListItem.fadeOutEnd {
+  display: none;
+}
+
 .fadeOut {
   animation: fadeOut .2s linear;
 }

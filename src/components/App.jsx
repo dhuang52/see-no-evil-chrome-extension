@@ -67,51 +67,41 @@ class App extends React.Component {
     let { words } = this.state;
     words = words.filter((word) => word.word !== removeWord);
     this.syncStorageAndState(words);
-    // should setState in syncStorageAndState but it messes up the fadeOut animation
-    this.setState({ words });
   }
 
   addWord = (addWord) => {
-    if (!addWord) {
-      return;
-    }
-    const { words, sortBySelected } = this.state;
-    const i = words.findIndex((word) => word.word === addWord);
-    // only add if word does not exist in list
-    if (i < 0) {
-      const dateNow = Date.now();
-      const newWord = {
-        word: addWord,
-        lastModified: dateNow,
-        id: dateNow,
-      };
-      words.push(newWord);
-      this.syncStorageAndState(words);
-      // should setState in syncStorageAndState but it messes up the fadeOut animation
-      this.setState({
-        words,
-      }, () => this.handleSortBy(sortBySelected));
+    if (addWord) {
+      const { words } = this.state;
+      const i = words.findIndex((word) => word.word === addWord);
+      // only add if word does not exist in list
+      if (i < 0) {
+        const dateNow = Date.now();
+        const newWord = {
+          word: addWord,
+          lastModified: dateNow,
+          id: dateNow,
+        };
+        words.push(newWord);
+        this.syncStorageAndState(words);
+      }
     }
   }
 
   editWord = (wordId, newWord) => {
-    if (!newWord) {
-      return;
+    if (newWord) {
+      let { words } = this.state;
+      words = words.map((word) => {
+        if (word.id === wordId) {
+          return {
+            word: newWord,
+            lastModified: Date.now(),
+            id: word.id,
+          };
+        }
+        return word;
+      });
+      this.syncStorageAndState(words);
     }
-    let { words } = this.state;
-    words = words.map((word) => {
-      if (word.id === wordId) {
-        return {
-          word: newWord,
-          lastModified: Date.now(),
-          id: word.id,
-        };
-      }
-      return word;
-    });
-    this.syncStorageAndState(words);
-    // should setState in syncStorageAndState but it messes up the fadeOut animation
-    // this.setState({ words });
   }
 
   sortWords = () => {

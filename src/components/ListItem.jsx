@@ -6,35 +6,29 @@ import { DeleteOutlined } from '@ant-design/icons';
 class HideListItem extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      removed: false,
-      focus: false,
-    };
+    this.state = { animation: 'fadeIn' };
   }
 
   onChange = (e) => {
     const { editItem, id } = this.props;
     const newValue = e.target.value;
-    // const originalValue = this.props.word;
     editItem(id, newValue);
   }
 
   removeItem = () => {
-    this.setState({ removed: true });
+    this.setState({ animation: 'fadeOut' });
   }
 
   getClassName = () => {
-    const { removed, focus } = this.state;
-    const animationClassName = removed ? 'fadeOut' : 'fadeIn';
-    const focusClassName = focus ? 'focus' : '';
-    return `input hideListItem ${animationClassName} ${focusClassName}`;
+    const { animation } = this.state;
+    return `input hideListItem ${animation}`;
   }
 
   handleAnimationEnd = () => {
-    const { removed } = this.state;
+    const { animation } = this.state;
     const { deleteItem, word } = this.props;
-    if (removed) {
-      deleteItem(word);
+    if (animation === 'fadeOut') {
+      this.setState({ animation: 'fadeOutEnd' }, () => deleteItem(word));
     }
   }
 
@@ -43,8 +37,8 @@ class HideListItem extends React.Component {
     return (
       <Row
         align='middle'
-        onFocus={() => this.setState({ focus: true })}
-        onBlur={() => this.setState({ focus: false })}
+        onFocus={() => this.setState({ animation: 'focus' })}
+        onBlur={() => this.setState({ animation: '' })}
         onAnimationEnd={this.handleAnimationEnd}
         className={this.getClassName()}
       >
