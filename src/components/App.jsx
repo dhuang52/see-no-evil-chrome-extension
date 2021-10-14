@@ -3,7 +3,7 @@ import { Row, Col, Space } from 'antd';
 import Fuse from 'fuse.js';
 import Header from './Header';
 import Search from './Search';
-import HideList from './List';
+import List from './List';
 import Loading from './Loading';
 import sortBy from '../constants/sortBy';
 import '../styles/App.css';
@@ -151,7 +151,7 @@ class App extends React.Component {
                 addWord={this.addWord}
                 handleSearch={this.handleSearch}
               />
-              <HideList
+              <List
                 words={this.getSearchResults()}
                 deleteWord={this.deleteWord}
                 editWord={this.editWord}

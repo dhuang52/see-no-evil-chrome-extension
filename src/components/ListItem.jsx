@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Row, Col } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
-class HideListItem extends React.Component {
+class ListItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = { animation: 'fadeIn' };
@@ -56,11 +56,11 @@ class HideListItem extends React.Component {
   }
 }
 
-HideListItem.propTypes = {
+ListItem.propTypes = {
   word: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
   deleteItem: PropTypes.func.isRequired,
   editItem: PropTypes.func.isRequired,
 };
 
-export default HideListItem;
+export default ListItem;

@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Row, Col } from 'antd';
-import HideListItem from './ListItem';
+import ListItem from './ListItem';
 
-class HideList extends React.Component {
+class List extends React.Component {
   createItem = (word) => {
     const { deleteWord, editWord } = this.props;
     return (
-      <HideListItem
+      <ListItem
         word={word.word}
         deleteItem={deleteWord}
         editItem={editWord}
@@ -29,10 +29,10 @@ class HideList extends React.Component {
   }
 }
 
-HideList.propTypes = {
+List.propTypes = {
   words: PropTypes.arrayOf(PropTypes.object).isRequired,
   deleteWord: PropTypes.func.isRequired,
   editWord: PropTypes.func.isRequired,
 };
 
-export default HideList;
+export default List;
