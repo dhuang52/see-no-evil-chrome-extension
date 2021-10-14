@@ -45,7 +45,6 @@ class App extends React.Component {
       } else if (result[wordsStorageKey]) {
         words = result[wordsStorageKey];
       }
-      // React does not properly rerender when calling setState in callback
       this.setState({ words, isLoading: false });
     });
   }
@@ -63,21 +62,21 @@ class App extends React.Component {
     });
   }
 
-  deleteWord = (removeWord) => {
+  deleteWord = (word) => {
     let { words } = this.state;
-    words = words.filter((word) => word.word !== removeWord);
+    words = words.filter((w) => w.word !== word);
     this.syncStorageAndState(words);
   }
 
-  addWord = (addWord) => {
-    if (addWord) {
+  addWord = (word) => {
+    if (word) {
       const { words } = this.state;
-      const i = words.findIndex((word) => word.word === addWord);
+      const i = words.findIndex((w) => w.word === word);
       // only add if word does not exist in list
       if (i < 0) {
         const dateNow = Date.now();
         const newWord = {
-          word: addWord,
+          word,
           lastModified: dateNow,
           id: dateNow,
         };
@@ -87,18 +86,18 @@ class App extends React.Component {
     }
   }
 
-  editWord = (wordId, newWord) => {
-    if (newWord) {
+  editWord = (wordId, word) => {
+    if (word) {
       let { words } = this.state;
-      words = words.map((word) => {
-        if (word.id === wordId) {
+      words = words.map((w) => {
+        if (w.id === wordId) {
           return {
-            word: newWord,
+            word,
             lastModified: Date.now(),
-            id: word.id,
+            id: w.id,
           };
         }
-        return word;
+        return w;
       });
       this.syncStorageAndState(words);
     }
@@ -164,11 +163,9 @@ class App extends React.Component {
     );
   }
 
-  renderLoading = () => (<Loading />)
-
   render() {
     const { isLoading } = this.state;
-    return isLoading ? this.renderLoading() : this.renderApp();
+    return isLoading ? <Loading /> : this.renderApp();
   }
 }
 
