@@ -41,6 +41,10 @@ input {
   padding: 5px 20px;
 }
 
+.searchBar {
+  margin-top: 5px;
+}
+
 .searchBar input {
   border-width: 0;
   border-bottom: 1px solid #d9d9d9;

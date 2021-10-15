@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Space } from 'antd';
+import { Row, Col } from 'antd';
 import Fuse from 'fuse.js';
 import Header from './Header';
 import Search from './Search';
@@ -141,23 +141,21 @@ class App extends React.Component {
     return (
       <Row id='popup-app'>
         <Col span={24}>
-          <Space direction='vertical' style={{ width: '100%' }}>
-            <Header
-              sortBySelected={sortBySelected}
-              handleSortBy={this.handleSortBy}
+          <Header
+            sortBySelected={sortBySelected}
+            handleSortBy={this.handleSortBy}
+          />
+          <div className='bodyContainer'>
+            <Search
+              addWord={this.addWord}
+              handleSearch={this.handleSearch}
             />
-            <div className='bodyContainer'>
-              <Search
-                addWord={this.addWord}
-                handleSearch={this.handleSearch}
-              />
-              <List
-                words={this.getSearchResults()}
-                deleteWord={this.deleteWord}
-                editWord={this.editWord}
-              />
-            </div>
-          </Space>
+            <List
+              words={this.getSearchResults()}
+              deleteWord={this.deleteWord}
+              editWord={this.editWord}
+            />
+          </div>
         </Col>
       </Row>
     );
