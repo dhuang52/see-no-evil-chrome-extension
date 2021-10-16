@@ -88,17 +88,12 @@ class App extends React.Component {
 
   editWord = (wordId, word) => {
     if (word) {
-      let { words } = this.state;
-      words = words.map((w) => {
-        if (w.id === wordId) {
-          return {
-            word,
-            lastModified: Date.now(),
-            id: w.id,
-          };
-        }
-        return w;
-      });
+      const { words } = this.state;
+      const i = words.findIndex((w) => w.id === wordId);
+      if (i > -1) {
+        words[i].word = word;
+        words[i].lastModified = Date.now();
+      }
       this.syncStorageAndState(words);
     }
   }
