@@ -82,6 +82,8 @@ class App extends React.Component {
         };
         words.push(newWord);
         this.syncStorageAndState(words);
+        // Clear the search bar after adding a word
+        this.setState({ search: '' });
       }
     }
   }
@@ -132,7 +134,7 @@ class App extends React.Component {
   }
 
   renderApp = () => {
-    const { sortBySelected } = this.state;
+    const { sortBySelected, search } = this.state;
     return (
       <Row id='popup-app'>
         <Col span={24}>
@@ -144,6 +146,7 @@ class App extends React.Component {
             <Search
               addWord={this.addWord}
               handleSearch={this.handleSearch}
+              search={search}
             />
             <List
               words={this.getSearchResults()}

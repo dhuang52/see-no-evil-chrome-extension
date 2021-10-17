@@ -16,8 +16,8 @@ class Search extends React.Component {
   }
 
   onKeyPress = (e) => {
-    const { addWord } = this.props;
     if (e.charCode === ENTER_KEYCODE) {
+      const { addWord } = this.props;
       addWord(e.target.value);
     }
   }
@@ -29,6 +29,7 @@ class Search extends React.Component {
   }
 
   render() {
+    const { search } = this.props;
     return (
       <Row>
         <Col
@@ -42,6 +43,7 @@ class Search extends React.Component {
             placeholder='search or add'
             onChange={this.onChange}
             onKeyPress={this.onKeyPress}
+            value={search}
           />
         </Col>
       </Row>
@@ -52,6 +54,7 @@ class Search extends React.Component {
 Search.propTypes = {
   handleSearch: PropTypes.func.isRequired,
   addWord: PropTypes.func.isRequired,
+  search: PropTypes.string.isRequired,
 };
 
 export default Search;
