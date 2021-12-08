@@ -6,15 +6,11 @@ import Search from './Search';
 import List from './List';
 import Loading from './Loading';
 import sortBy from '../constants/sortBy';
+import defaultHideWords from '../constants/defaultHideWords';
 import '../styles/App.css';
 import 'antd/dist/antd.css';
 
 const wordsStorageKey = 'hideWords';
-const defaultWord = {
-  word: 'add some words in the search bar',
-  lastModified: Date.now(),
-  id: Date.now(),
-};
 
 class App extends React.Component {
   constructor(props) {
@@ -38,7 +34,7 @@ class App extends React.Component {
 
   getWordsFromSyncStorage = () => {
     chrome.storage.sync.get(wordsStorageKey, (result) => {
-      let words = [defaultWord];
+      let words = defaultHideWords;
       if (chrome.runtime.lastError) {
         // TODO: display error message to user
         console.log('error while getting hide words');

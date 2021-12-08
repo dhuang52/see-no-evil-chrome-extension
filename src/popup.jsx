@@ -43,12 +43,12 @@ if (
 const bodyId = 'see-no-evil-popup';
 const popup = document.getElementById(bodyId);
 
-// chrome.storage.sync.remove(hideWordsStorageKey, () => {
+// chrome.storage.sync.remove('hideWords', () => {
 //   if (chrome.runtime.lastError) {
-//     console.log('error while clearing hide words')
+//     console.log('error while clearing hide words');
 //   } else {
-//     console.log('successfully cleared hide words list')
+//     console.log('successfully cleared hide words list');
 //   }
-// })
+// });
 
 ReactDOM.render(<App />, popup);
