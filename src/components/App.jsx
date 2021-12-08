@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col } from 'antd';
+import { Alert, Row, Col } from 'antd';
 import Fuse from 'fuse.js';
 import Header from './Header';
 import Search from './Search';
@@ -25,6 +25,7 @@ class App extends React.Component {
       sortBySelected: sortBy.NEW,
       // the user's search
       search: '',
+      storageApiError: false,
     };
   }
 
@@ -34,14 +35,14 @@ class App extends React.Component {
 
   getWordsFromSyncStorage = () => {
     chrome.storage.sync.get(wordsStorageKey, (result) => {
-      let words = defaultHideWords;
       if (chrome.runtime.lastError) {
-        // TODO: display error message to user
-        console.log('error while getting hide words');
+        console.log('error while getting hide words', chrome.runtime.lastError);
+        this.setState({ storageApiError: true, isLoading: false });
       } else if (result[wordsStorageKey]) {
-        words = result[wordsStorageKey];
+        this.setState({ words: result[wordsStorageKey], isLoading: false });
+      } else {
+        this.setState({ words: defaultHideWords, isLoading: false });
       }
-      this.setState({ words, isLoading: false });
     });
   }
 
@@ -50,9 +51,10 @@ class App extends React.Component {
     storageKvp[wordsStorageKey] = newWords;
     chrome.storage.sync.set(storageKvp, () => {
       if (chrome.runtime.lastError) {
-        console.log('error while updating storage');
+        console.log('error while updating storage', chrome.runtime.lastError);
+        this.setState({ storageApiError: true });
       } else {
-        console.log('successfully updated storage', newWords);
+        console.log('successfully updated storage', storageKvp);
         this.setState({ words: newWords });
       }
     });
@@ -129,11 +131,27 @@ class App extends React.Component {
     return searchResults;
   }
 
+  createErrorAlert = () => (
+    <Row>
+      <Col span={24}>
+        <Alert
+          message='Chrome storage API error'
+          type='error'
+          banner
+          closable
+          showIcon
+          afterClose={() => { this.setState({ storageApiError: false }); }}
+        />
+      </Col>
+    </Row>
+  );
+
   renderApp = () => {
-    const { sortBySelected, search } = this.state;
+    const { sortBySelected, search, storageApiError } = this.state;
     return (
       <Row id='popup-app'>
         <Col span={24}>
+          {storageApiError && this.createErrorAlert()}
           <Header
             sortBySelected={sortBySelected}
             handleSortBy={this.handleSortBy}
