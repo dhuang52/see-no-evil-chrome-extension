@@ -3,16 +3,20 @@ import PropTypes from 'prop-types';
 import { Row, Col } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
 
+const ENTER_KEYCODE = 13;
+
 class ListItem extends React.Component {
   constructor(props) {
     super(props);
     this.state = { animation: 'fadeIn' };
   }
 
-  onChange = (e) => {
-    const { editItem, id } = this.props;
-    const newValue = e.target.value;
-    editItem(id, newValue);
+  onKeyPress = (e) => {
+    if (e.charCode === ENTER_KEYCODE) {
+      const { editItem, id } = this.props;
+      const newValue = e.target.value;
+      editItem(id, newValue);
+    }
   }
 
   removeItem = () => {
@@ -42,7 +46,10 @@ class ListItem extends React.Component {
         onAnimationEnd={this.handleAnimationEnd}
         className={this.getClassName()}
       >
-        <Col span={22}>
+        <Col
+          span={22}
+          onKeyPress={this.onKeyPress}
+        >
           <input type='text' defaultValue={word} onChange={this.onChange} />
         </Col>
         <Col span={2} className='deleteIconContainer'>
