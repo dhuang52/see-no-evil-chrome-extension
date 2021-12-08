@@ -1,7 +1,7 @@
 {
-  "name": "See No Evil",
-  "description" : "Hide spoilers",
-  "permissions": ["tabs", "storage", "scripting", "webNavigation", "webRequest"],
+  "name": "blur",
+  "description" : "A spoiler blocker for YouTube",
+  "permissions": ["storage"],
   "host_permissions": ["*://*.youtube.com/*"],
   "action": {
     "default_popup": "popup.html"
