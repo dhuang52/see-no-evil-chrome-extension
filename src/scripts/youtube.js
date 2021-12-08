@@ -1,21 +1,27 @@
-import Fuse from 'fuse.js';
+// import Fuse from 'fuse.js';
 import youtubeDOMUtils from './utils/youtube';
 import '../styles/blur.css';
 
-let hideWordList = [];
+let words = [];
 const HIDE_WORDS_LIST_STORAGE_KEY = 'hideWords';
 const BLUR_LAYER_CLASS = 'sne-blur-layer';
-const FUSE = new Fuse([], {
-  includeScore: true,
-  threshold: 0.3,
-});
+// const FUSE = new Fuse([], {
+//   includeScore: true,
+//   threshold: 0.3,
+// });
 
 const nodeMetaDataSimilarToHideWord = (node) => {
-  const channelName = youtubeDOMUtils.getChannelName(node);
-  const videoTitle = youtubeDOMUtils.getVideoTitle(node);
-  FUSE.setCollection([channelName, videoTitle]);
-  const hideWordMatches = hideWordList.flatMap((hideWord) => FUSE.search(hideWord.word));
-  return hideWordMatches.length;
+  const channelNameLowerCase = youtubeDOMUtils.getChannelName(node).toLowerCase();
+  const videoTitleLowerCase = youtubeDOMUtils.getVideoTitle(node).toLowerCase();
+
+  // Might be a nice to have in the future, but also might be confusing to users, so temporarily
+  // commenting out all fuse related code.
+  // FUSE.setCollection([channelName, videoTitle]);
+  // const matches = words.flatMap((words) => FUSE.search(words.word));
+  // return matches.length;
+
+  return words.filter((word) => channelNameLowerCase.includes(word.word.toLowerCase())
+  || videoTitleLowerCase.includes(word.word.toLowerCase())).length;
 };
 
 const blurNode = (node) => {
@@ -54,7 +60,7 @@ chrome.storage.sync.get(HIDE_WORDS_LIST_STORAGE_KEY, (result) => {
     // TODO: display error message to user
     console.log('error while getting hide words', chrome.runtime.lastError);
   } else if (result[HIDE_WORDS_LIST_STORAGE_KEY]) {
-    hideWordList = result[HIDE_WORDS_LIST_STORAGE_KEY];
+    words = result[HIDE_WORDS_LIST_STORAGE_KEY];
     // Manually trigger an update to the DOM since the MutationObserver might not catch all events
     // when the page first loads
     const allVideoNodes = youtubeDOMUtils.getAllVideoNodes();
@@ -65,7 +71,7 @@ chrome.storage.sync.get(HIDE_WORDS_LIST_STORAGE_KEY, (result) => {
 chrome.storage.onChanged.addListener((changes, namespace) => {
   // Update local copy of hideWords if there was a new value
   if (namespace === 'sync' && changes[HIDE_WORDS_LIST_STORAGE_KEY]?.newValue) {
-    hideWordList = changes[HIDE_WORDS_LIST_STORAGE_KEY].newValue;
+    words = changes[HIDE_WORDS_LIST_STORAGE_KEY].newValue;
     // Manually trigger an update to the DOM since the MutationObserver does not catch storage
     // API events
     const allVideoNodes = youtubeDOMUtils.getAllVideoNodes();
