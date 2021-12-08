@@ -58,10 +58,10 @@ class App extends React.Component {
     });
   }
 
-  deleteWord = (word) => {
-    let { words } = this.state;
-    words = words.filter((w) => w.word !== word);
-    this.syncStorageAndState(words);
+  deleteWord = (id) => {
+    const { words } = this.state;
+    const newWords = words.filter((w) => w.id !== id);
+    this.syncStorageAndState(newWords);
   }
 
   addWord = (word) => {

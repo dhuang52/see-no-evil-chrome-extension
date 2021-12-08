@@ -30,9 +30,9 @@ class ListItem extends React.Component {
 
   handleAnimationEnd = () => {
     const { animation } = this.state;
-    const { deleteItem, word } = this.props;
+    const { deleteItem, id } = this.props;
     if (animation === 'fadeOut') {
-      this.setState({ animation: 'fadeOutEnd' }, () => deleteItem(word));
+      this.setState({ animation: 'fadeOutEnd' }, () => deleteItem(id));
     }
   }
 
