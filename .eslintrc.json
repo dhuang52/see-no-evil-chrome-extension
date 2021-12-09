@@ -20,6 +20,7 @@
         "react"
     ],
     "rules": {
-        "jsx-quotes": [2, "prefer-single"]
+        "jsx-quotes": [2, "prefer-single"],
+        "import/no-extraneous-dependencies": ["error", {"devDependencies": true}]
     }
 }

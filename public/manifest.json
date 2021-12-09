@@ -14,7 +14,8 @@
         "*://*.youtube.com/results?*",
         "*://*.youtube.com/c*"
       ],
-      "js": ["youtube.bundle.js"]
+      "js": ["youtube.bundle.js"],
+      "css": ["youtube.css"]
     }
   ],
   "version": "1.0",

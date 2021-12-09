@@ -1,6 +1,5 @@
 // import Fuse from 'fuse.js';
 import youtubeDOMUtils from './utils/youtube';
-import '../styles/blur.css';
 
 let words = [];
 const HIDE_WORDS_LIST_STORAGE_KEY = 'hideWords';
