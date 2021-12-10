@@ -24,6 +24,6 @@
   "content_security_policy": {
     "extension_pages": "default-src 'self'; frame-ancestors 'none'; style-src 'self' 'sha256-DjMTx6ObcjL680ffkLdKKQWSyoPjBpYMGIyHmRjA0Hc=' 'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=' 'sha256-Oj0qszI9MewWF0PgqA6ajeeXBsOYEx6xWBsFZ98UGoc=' 'sha256-DOu86drLfwUr1Wcsx/wxfqAogK7tFvJGjVmF/300H/M=';"
   },
-  "version": "1.0",
+  "version": "0.0.0.1",
   "manifest_version": 3
 }
