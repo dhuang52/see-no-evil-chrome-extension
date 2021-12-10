@@ -28,6 +28,7 @@ module.exports = {
       patterns: [
         { from: './public', to: path.resolve(__dirname, 'dist') },
         { from: './src/scripts/youtube.css', to: path.resolve(__dirname, 'dist') },
+        { from: './src/assets/img', to: path.resolve(__dirname, 'dist') },
       ],
     }),
   ],
