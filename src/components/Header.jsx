@@ -23,7 +23,7 @@ class Header extends React.Component {
     return (
       <Row className='headerContainer' align='middle'>
         <Col flex='auto'>
-          <h1>blur</h1>
+          <h1>blurry</h1>
         </Col>
         <Col flex='none' className='sortyByButtons'>
           <Space>
